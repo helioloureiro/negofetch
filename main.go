@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
 	"regexp"
 	"strings"
 
 	"github.com/helioloureiro/golorama"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/sys/unix"
 )
 
 /*
@@ -166,77 +168,91 @@ func main() {
 	posY := termHeight - y - 4
 	fmt.Printf("\033[%d;%dH", posY, posX)
 	posY++
-	machineTag := "helio@machine"
+	machineTag := getUsername() + "@" + getHostname()
 	fmt.Printf("%s: %d", machineTag, termHeight-y-4)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
+	positionStepUp(&posX, &posY)
 
 	sizeTag := len(machineTag)
 	for i := 0; i < sizeTag; i++ {
 		fmt.Printf("-")
 	}
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-
-	os := "macOS"
-	host := "machine"
-	kernel := "Darwin 1.2.3"
-	uptime := "5 days"
-	packages := "10 (brew)"
-	shell := "zsh 1.0"
-	resolution := "1920x1080"
-	de := "aqua"
-	wm := "quartz"
-	wmTheme := "graphite"
-	terminal := "iterm2"
-	terminalFont := "Monaco"
-	cpu := "Apple M1"
-	gpu := "Apple M1"
-	memory := "16 GB"
-	fmt.Printf("OS: %s", os)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Host: %s", host)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Kernel: %s", kernel)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Uptime: %s", uptime)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Packages: %s", packages)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Shell: %s", shell)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Resolution: %s", resolution)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("DE: %s", de)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("WM: %s", wm)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("WM Theme: %s", wmTheme)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Terminal: %s", terminal)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Terminal Font: %s\n", terminalFont)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("CPU: %s", cpu)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("GPU: %s", gpu)
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
-	fmt.Printf("Memory: %s", memory)
+	positionStepUp(&posX, &posY)
+	uname := getUname()
+	os := uname.Sysname
+	host := uname.Nodename
+	kernel := uname.Release
+	uptime := "5 days (hardcoded)"
+	packages := "10 (brew) (hardcoded)"
+	shell := "zsh 1.0 (hardcoded)"
+	resolution := "1920x1080 (hardcoded)"
+	de := "aqua (hardcoded)"
+	wm := "quartz (hardcoded)"
+	wmTheme := "graphite (hardcoded)"
+	terminal := "iterm2 (hardcoded)"
+	terminalFont := "Monaco (hardcoded)"
+	cpu := "Apple M1 (hardcoded)"
+	gpu := "Apple M1 (hardcoded)"
+	memory := "16 GB (hardcoded)"
+	fmt.Printf("%sOS%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), os)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sHost%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), host)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sKernel%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), kernel)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sUptime%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), uptime)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sPackages%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), packages)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sShell%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), shell)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sResolution%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), resolution)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sDE%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), de)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sWM%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), wm)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sWM Theme%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), wmTheme)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sTerminal%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), terminal)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sTerminal Font%s: %s\n", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), terminalFont)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sCPU%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), cpu)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sGPU%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), gpu)
+	positionStepUp(&posX, &posY)
+	fmt.Printf("%sMemory%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), memory)
 
 	// back to the end
 	fmt.Printf("\033[%d;%dH", termHeight, termHeight)
+}
+
+func positionStepUp(x, y *int) {
+	fmt.Printf("\033[%d;%dH", *y, *x)
+	*y++
+}
+
+func getUsername() string {
+	u, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return u.Username
+}
+
+func getHostname() string {
+	h, err := os.Hostname()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return h
+}
+
+func getUname() unix.Utsname {
+	var uname unix.Utsname
+	err := unix.Uname(&uname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return uname
 }
