@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/user"
 	"regexp"
 	"strings"
 
+	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/sys/unix"
@@ -180,10 +182,10 @@ func main() {
 	uname := getUname()
 	os := uname.Sysname
 	host := uname.Nodename
-	kernel := uname.Release
-	uptime := "5 days (hardcoded)"
-	packages := "10 (brew) (hardcoded)"
-	shell := "zsh 1.0 (hardcoded)"
+	kernel := fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
+	uptime := getUptime()
+	packages := getPackages()
+	shell := getShell()
 	resolution := "1920x1080 (hardcoded)"
 	de := "aqua (hardcoded)"
 	wm := "quartz (hardcoded)"
@@ -255,4 +257,87 @@ func getUname() unix.Utsname {
 		log.Fatal(err)
 	}
 	return uname
+}
+
+func getShell() string {
+	shell := os.Getenv("SHELL")
+
+	if grep("/bin/bash", shell) {
+		shell = "bash"
+	} else if grep("/bin/zsh", shell) {
+		shell = "zsh"
+	} else if grep("/bin/fish", shell) {
+		shell = "fish"
+	} else if grep("/bin/tcsh", shell) {
+		shell = "tcsh"
+	} else if grep("/bin/csh", shell) {
+		shell = "csh"
+	} else if grep("/bin/csh", shell) {
+		shell = "csh"
+	} else if grep("/bin/ksh", shell) {
+		shell = "ksh"
+	}
+
+	return shell
+}
+
+func grep(pattern, text string) bool {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return re.MatchString(text)
+}
+
+func getUptime() string {
+	uname := getUname()
+
+	sysname := fmt.Sprintf("%s", uname.Sysname)
+
+	switch sysname {
+	case "Linux":
+		// si := sysinfo.Get()
+		// return si.Uptime.String()
+		return "hardcoded uptime"
+
+	case "Darwin":
+		return shellExec("uptime")
+
+	default:
+		return "uknown system: " + shellExec("uptime")
+	}
+
+}
+
+func shellExec(command string) string {
+	commandPieces := strings.Split(command, " ")
+	result, err := exec.Command(commandPieces[0], commandPieces[1:]...).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(result)
+}
+
+func byte256ToString(b [256]byte) string {
+
+	str := ""
+	for i := 0; i < len(b); i++ {
+		str += string(b[i])
+	}
+	return str
+}
+
+func getPackages() string {
+	packages := shellExec("brew list -1")
+	counter := 0
+	for _, pkg := range strings.Split(packages, "\n") {
+		if grep("==>", pkg) {
+			continue
+		}
+		if pkg != "" {
+			counter++
+		}
+	}
+	return fmt.Sprintf("%d (brew)", counter)
 }
