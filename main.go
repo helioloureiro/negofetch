@@ -11,6 +11,8 @@ import (
 
 	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
+	//"golang.org/x/crypto/ssh/terminal"
+
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/sys/unix"
 )
@@ -44,37 +46,41 @@ const (
 	HSPACES int = 5
 )
 
+const (
+	RESET = iota
+	LIGHTRED
+	LIGHTGREEN
+	LIGHTYELLOW
+	LIGHTBLUE
+	LIGHTMAGENTA
+)
+
 func setColors(colors ...int) []string {
 	result := make([]string, len(colors)+1)
 	for id, colorID := range colors {
-		result[id+1] = golorama.GetCSI(90 + colorID)
+		result[id+1] = colorConverter(colorID)
 	}
 	return result
 }
 
-func macOSLogo() string {
-	return golorama.GetCSI(golorama.LIGHTGREEN_EX) + `
-                    'c.
-                  ,xNMM.
-                .OMMMMo
-                OMMM0,
-      .;loddo:' loolloddol;.
-    cKMMMMMMMMMMNWMMMMMMMMMM0:
-` + golorama.GetCSI(golorama.LIGHTYELLOW_EX) + `  .KMMMMMMMMMMMMMMMMMMMMMMMWd.
-  XMMMMMMMMMMMMMMMMMMMMMMMX.
-` + golorama.GetCSI(golorama.LIGHTRED_EX) + ` ;MMMMMMMMMMMMMMMMMMMMMMMM:
- :MMMMMMMMMMMMMMMMMMMMMMMM:
- .MMMMMMMMMMMMMMMMMMMMMMMMX.
-  kMMMMMMMMMMMMMMMMMMMMMMMMWd.
-` + golorama.GetCSI(golorama.LIGHTMAGENTA_EX) + `  .XMMMMMMMMMMMMMMMMMMMMMMMMMMk
-   .XMMMMMMMMMMMMMMMMMMMMMMMMK.
-` + golorama.GetCSI(golorama.LIGHTBLUE_EX) + `     kMMMMMMMMMMMMMMMMMMMMMMd
-      ;KMMMMMMMWXXWMMMMMMMk.
-        .cooc,.    .,coo:.
- ` + golorama.Reset()
+func colorConverter(color int) string {
+	switch color {
+	case LIGHTRED:
+		return golorama.GetCSI(golorama.LIGHTRED_EX)
+	case LIGHTGREEN:
+		return golorama.GetCSI(golorama.LIGHTGREEN_EX)
+	case LIGHTYELLOW:
+		return golorama.GetCSI(golorama.LIGHTYELLOW_EX)
+	case LIGHTBLUE:
+		return golorama.GetCSI(golorama.LIGHTBLUE_EX)
+	case LIGHTMAGENTA:
+		return golorama.GetCSI(golorama.LIGHTMAGENTA_EX)
+	default:
+		return golorama.GetCSI(golorama.RESET)
+	}
 }
 
-func otherMacOSLogo() string {
+func macOSLogo() string {
 	// set_colors 2 3 1 1 5 4
 	c := setColors(2, 3, 4, 1, 1, 5, 4)
 	return `
@@ -103,10 +109,8 @@ func printLogo(system string) {
 	switch system {
 	case "macOS":
 		fmt.Println(macOSLogo())
-	case "alternative-macOS":
-		fmt.Println(otherMacOSLogo())
 	default:
-		fmt.Println("System not found")
+		fmt.Println("System not found:", system)
 	}
 
 }
@@ -118,7 +122,7 @@ func getLogoDimensions(logo string) (length, height int) {
 	for _, line := range strings.Split(logo, "\n") {
 		line = lineStripColorCode(line)
 		innerLength := len(line)
-		fmt.Printf("line %d: %s (%d)\n", height, line, innerLength)
+		// fmt.Printf("line %d: %s (%d)\n", height, line, innerLength)
 		if innerLength > length {
 			length = innerLength
 		}
@@ -136,12 +140,11 @@ func lineStripColorCode(line string) string {
 }
 
 func main() {
-	fmt.Println("vim-go")
-	printLogo("macOS")
-	printLogo("alternative-macOS")
-	x, y := getLogoDimensions(otherMacOSLogo())
-	fmt.Println("Width:", x)
-	fmt.Println("length:", y)
+	x, y := getLogoDimensions(macOSLogo())
+
+	dataFetch := negofetch{}
+	dataFetch.detectOS()
+	printLogo(dataFetch.OS)
 
 	// time.Sleep(3 * time.Second)
 	// fmt.Println("\033[25;17H")
@@ -158,14 +161,8 @@ func main() {
 			    //printf ( "%s", input);
 			    printf ( "\033[9;17H");//move cursor to row 9 col 17
 	*/
-	currentTerminalFD := int(os.Stdin.Fd())
-	termWidth, termHeight, err := terminal.GetSize(currentTerminalFD)
-	if err != nil {
-		log.Fatal("Error:", err)
-	}
-	fmt.Println("terminal width:", termWidth)
-	fmt.Println("terminal height:", termHeight)
 
+	termWidth, termHeight := getTerminalSize()
 	posX := x + HSPACES + 12
 	posY := termHeight - y - 4
 	fmt.Printf("\033[%d;%dH", posY, posX)
@@ -226,12 +223,89 @@ func main() {
 	fmt.Printf("%sMemory%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), memory)
 
 	// back to the end
-	fmt.Printf("\033[%d;%dH", termHeight, termHeight)
+	// fmt.Printf("\033[%d;%dH", termHeight, termWidth)
+	setCursorPosition(termWidth, termHeight)
+	// extra
 }
 
+type negofetch struct {
+	OS           string
+	Host         string
+	Kernel       string
+	Uptime       string
+	Packages     string
+	Shell        string
+	Resolution   string
+	DE           string
+	WM           string
+	WMTheme      string
+	Terminal     string
+	TerminalFont string
+	CPU          string
+	GPU          string
+	Memory       string
+}
+
+func (n *negofetch) detectOS() {
+	if fileExist("/etc") {
+		system := shellExec("uname -s")
+		switch system {
+		case "Darwin":
+			n.OS = "macOS"
+		case "Linux":
+			if fileExist("/etc/lsb-release") {
+				n.OS = getOSFromLSB()
+			} else if fileExist("/etc/os-release") {
+				n.OS = getOSFromOSRelease()
+			}
+		default:
+			n.OS = "Unknown Unix: " + system
+			fmt.Println("Sizeof: ", len(system))
+		}
+
+	} else {
+		n.OS = "Windows (not found /etc)"
+	}
+
+}
+
+func fileExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
+}
+
+func getOSFromLSB() string {
+	data, err := os.ReadFile("/etc/lsb-release")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "DISTRIB_ID=") {
+			return strings.TrimPrefix(line, "DISTRIB_ID=")
+		}
+	}
+	return "Unknown"
+}
+
+func getOSFromOSRelease() string {
+	data, err := os.ReadFile("/etc/os-release")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "NAME=") {
+			return strings.TrimPrefix(line, "NAME=")
+		}
+	}
+	return "Unknown"
+}
 func positionStepUp(x, y *int) {
-	fmt.Printf("\033[%d;%dH", *y, *x)
+	setCursorPosition(*x, *y)
 	*y++
+}
+
+func setCursorPosition(x, y int) {
+	fmt.Printf("\033[%d;%dH", y, x)
 }
 
 func getUsername() string {
@@ -292,7 +366,7 @@ func grep(pattern, text string) bool {
 func getUptime() string {
 	uname := getUname()
 
-	sysname := fmt.Sprintf("%s", uname.Sysname)
+	sysname := byte256ToString(uname.Sysname)
 
 	switch sysname {
 	case "Linux":
@@ -301,12 +375,16 @@ func getUptime() string {
 		return "hardcoded uptime"
 
 	case "Darwin":
-		return shellExec("uptime")
-
+		return getUptimeFromShell()
 	default:
-		return "uknown system: " + shellExec("uptime")
+		return "uknown system: " + getUptimeFromShell()
 	}
 
+}
+
+func getUptimeFromShell() string {
+	uptime := shellExec("uptime")
+	return strings.Split(uptime, ",")[0]
 }
 
 func shellExec(command string) string {
@@ -316,13 +394,17 @@ func shellExec(command string) string {
 		log.Fatal(err)
 	}
 
-	return string(result)
+	return strings.TrimSuffix(string(result), "\n")
 }
 
 func byte256ToString(b [256]byte) string {
 
 	str := ""
 	for i := 0; i < len(b); i++ {
+		// remove padding 0s
+		if b[i] == 0 {
+			continue
+		}
 		str += string(b[i])
 	}
 	return str
@@ -340,4 +422,14 @@ func getPackages() string {
 		}
 	}
 	return fmt.Sprintf("%d (brew)", counter)
+}
+
+func getTerminalSize() (int, int) {
+	currentTerminalFD := int(os.Stdin.Fd())
+	termWidth, termHeight, err := terminal.GetSize(currentTerminalFD)
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
+
+	return termWidth, termHeight
 }
