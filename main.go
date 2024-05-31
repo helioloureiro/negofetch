@@ -43,7 +43,7 @@ import (
 
 const (
 	// Horizontal spaces
-	HSPACES int = 5
+	HSPACES int = 0
 )
 
 const (
@@ -53,36 +53,60 @@ const (
 	LIGHTYELLOW
 	LIGHTBLUE
 	LIGHTMAGENTA
+	RED
+	GREEN
+	YELLOW
+	BLUE
+	MAGENTA
 )
 
+// setColors: it uses almost same schema colors as
+// from original neofetch, but as array
 func setColors(colors ...int) []string {
 	result := make([]string, len(colors)+1)
+	result[0] = ""
 	for id, colorID := range colors {
 		result[id+1] = colorConverter(colorID)
 	}
 	return result
 }
 
+// colorConverter: colors schema isn't matching with golorama
+// so a conversion is needed
 func colorConverter(color int) string {
 	switch color {
 	case LIGHTRED:
-		return golorama.GetCSI(golorama.LIGHTRED_EX)
+		return golorama.GetCSI(golorama.LIGHTRED)
 	case LIGHTGREEN:
-		return golorama.GetCSI(golorama.LIGHTGREEN_EX)
+		return golorama.GetCSI(golorama.LIGHTGREEN)
 	case LIGHTYELLOW:
-		return golorama.GetCSI(golorama.LIGHTYELLOW_EX)
+		return golorama.GetCSI(golorama.LIGHTYELLOW)
 	case LIGHTBLUE:
-		return golorama.GetCSI(golorama.LIGHTBLUE_EX)
+		return golorama.GetCSI(golorama.LIGHTBLUE)
 	case LIGHTMAGENTA:
-		return golorama.GetCSI(golorama.LIGHTMAGENTA_EX)
+		return golorama.GetCSI(golorama.LIGHTMAGENTA)
+	case RED:
+		return golorama.GetCSI(golorama.RED)
+	case GREEN:
+		return golorama.GetCSI(golorama.GREEN)
+	case YELLOW:
+		return golorama.GetCSI(golorama.YELLOW)
+	case BLUE:
+		return golorama.GetCSI(golorama.BLUE)
+	case MAGENTA:
+		return golorama.GetCSI(golorama.MAGENTA)
 	default:
-		return golorama.GetCSI(golorama.RESET)
+		return golorama.Reset()
 	}
+}
+
+func reset() string {
+	return golorama.Reset()
 }
 
 func macOSLogo() string {
 	// set_colors 2 3 1 1 5 4
-	c := setColors(2, 3, 4, 1, 1, 5, 4)
+	c := setColors(2, 3, 1, 1, 5, 4)
 	return `
  ` + c[1] + `                    'c.
                   ,xNMM.
@@ -101,34 +125,35 @@ func macOSLogo() string {
      ` + c[6] + `kMMMMMMMMMMMMMMMMMMMMMMd
       ;KMMMMMMMWXXWMMMMMMMk.
         .cooc,.    .,coo:.
-` + golorama.Reset()
-
+` + reset()
 }
 
-func printLogo(system string) {
+func printLogo(logo string) {
+	fmt.Println(logo)
+}
+
+func getLogo(system string) string {
 	switch system {
 	case "macOS":
-		fmt.Println(macOSLogo())
+		return macOSLogo()
 	default:
-		fmt.Println("System not found:", system)
+		return fmt.Sprintf("System not found: %s", system)
 	}
 
 }
 
-func getLogoDimensions(logo string) (length, height int) {
-	// break the string per line and find the longes width
-	length = 0
+func getLogoDimensions(logo string) (width, height int) {
+	width = 0
 	height = 0
 	for _, line := range strings.Split(logo, "\n") {
 		line = lineStripColorCode(line)
-		innerLength := len(line)
-		// fmt.Printf("line %d: %s (%d)\n", height, line, innerLength)
-		if innerLength > length {
-			length = innerLength
+		innerWidth := len(line)
+		if innerWidth > width {
+			width = innerWidth
 		}
 		height++
 	}
-	return length, height
+	return width, height
 }
 
 func lineStripColorCode(line string) string {
@@ -140,11 +165,11 @@ func lineStripColorCode(line string) string {
 }
 
 func main() {
-	x, y := getLogoDimensions(macOSLogo())
-
 	dataFetch := negofetch{}
 	dataFetch.detectOS()
-	printLogo(dataFetch.OS)
+	logo := getLogo(dataFetch.OS)
+	logoX, logoY := getLogoDimensions(logo)
+	printLogo(logo)
 
 	// time.Sleep(3 * time.Second)
 	// fmt.Println("\033[25;17H")
@@ -163,16 +188,15 @@ func main() {
 	*/
 
 	termWidth, termHeight := getTerminalSize()
-	posX := x + HSPACES + 12
-	posY := termHeight - y - 4
-	fmt.Printf("\033[%d;%dH", posY, posX)
-	posY++
+	posX := logoX + HSPACES
+	posY := termHeight - logoY
+	setCursorPosition(posX, posY)
+	positionStepUp(&posX, &posY)
 	machineTag := getUsername() + "@" + getHostname()
-	fmt.Printf("%s: %d", machineTag, termHeight-y-4)
+	fmt.Printf("%s%s%s", golorama.GetCSI(golorama.LIGHTGREEN), machineTag, golorama.Reset())
 	positionStepUp(&posX, &posY)
 
-	sizeTag := len(machineTag)
-	for i := 0; i < sizeTag; i++ {
+	for i := 0; i < len(machineTag); i++ {
 		fmt.Printf("-")
 	}
 	positionStepUp(&posX, &posY)
@@ -192,40 +216,44 @@ func main() {
 	cpu := "Apple M1 (hardcoded)"
 	gpu := "Apple M1 (hardcoded)"
 	memory := "16 GB (hardcoded)"
-	fmt.Printf("%sOS%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), os)
+	fmt.Printf("%s: %s", getBoldTitle("OS"), os)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sHost%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), host)
+	fmt.Printf("%s: %s", getBoldTitle("Host"), host)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sKernel%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), kernel)
+	fmt.Printf("%s: %s", getBoldTitle("Kernel"), kernel)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sUptime%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), uptime)
+	fmt.Printf("%s: %s", getBoldTitle("Uptime"), uptime)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sPackages%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), packages)
+	fmt.Printf("%s: %s", getBoldTitle("Packages"), packages)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sShell%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), shell)
+	fmt.Printf("%s: %s", getBoldTitle("Shell"), shell)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sResolution%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), resolution)
+	fmt.Printf("%s: %s", getBoldTitle("Resolution"), resolution)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sDE%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), de)
+	fmt.Printf("%s: %s", getBoldTitle("DE"), de)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sWM%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), wm)
+	fmt.Printf("%s: %s", getBoldTitle("WM"), wm)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sWM Theme%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), wmTheme)
+	fmt.Printf("%s: %s", getBoldTitle("WM Theme"), wmTheme)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sTerminal%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), terminal)
+	fmt.Printf("%s: %s", getBoldTitle("Terminal"), terminal)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sTerminal Font%s: %s\n", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), terminalFont)
+	fmt.Printf("%s: %s", getBoldTitle("Terminal Font"), terminalFont)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sCPU%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), cpu)
+	fmt.Printf("%s: %s", getBoldTitle("CPU"), cpu)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sGPU%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), gpu)
+	fmt.Printf("%s: %s", getBoldTitle("GPU"), gpu)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%sMemory%s: %s", golorama.GetCSI(golorama.YELLOW), golorama.Reset(), memory)
+	fmt.Printf("%s: %s", getBoldTitle("Memory"), memory)
 
 	// back to the end
 	// fmt.Printf("\033[%d;%dH", termHeight, termWidth)
 	setCursorPosition(termWidth, termHeight)
 	// extra
+}
+
+func getBoldTitle(title string) string {
+	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, golorama.Reset())
 }
 
 type negofetch struct {
