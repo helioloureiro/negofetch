@@ -194,8 +194,8 @@ func main() {
 	host := uname.Nodename
 	kernel := fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
 	uptime := getUptime()
-	packages := getPackages()
-	shell := getShell()
+	packages := dataFetch.getPackages()
+	shell := dataFetch.getShell()
 	resolution := "1920x1080 (hardcoded)"
 	de := "aqua (hardcoded)"
 	wm := "quartz (hardcoded)"
@@ -332,7 +332,7 @@ func getUname() unix.Utsname {
 	return uname
 }
 
-func getShell() string {
+func (n *negofetch) getShell() string {
 	shell := os.Getenv("SHELL")
 
 	if grep("/bin/bash", shell) {
@@ -351,6 +351,7 @@ func getShell() string {
 		shell = "ksh"
 	}
 
+	n.Shell = shell
 	return shell
 }
 
@@ -412,7 +413,8 @@ func byteToString(s string) string {
 func (n *negofetch) getPackages() string {
 	switch n.OS {
 	case "macOS":
-		return getBrewPackages()
+		n.Packages = getBrewPackages()
+		return n.Packages
 	default:
 		return "Not implemented yet for " + n.OS
 
