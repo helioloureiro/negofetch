@@ -10,4 +10,4 @@ while (<$fd>) {
     $line =~ s/\$\{c(\d)\}/\`\+c\[$1\]\+\`/g;
     print "$line\n";
 }
-close(FD);
+close($fd);
