@@ -41,6 +41,49 @@ import (
  7826 EOF
 */
 
+/****
+# Flag:    --ascii_distro
+# NOTE: AIX, Alpine, Anarchy, Android, Antergos, antiX, "AOSC OS",
+#       "AOSC OS/Retro", Apricity, ArcoLinux, ArchBox, ARCHlabs,
+#       ArchStrike, XFerience, ArchMerge, Arch, Artix, Arya, Bedrock,
+#       Bitrig, BlackArch, BLAG, BlankOn, BlueLight, bonsai, BSD,
+#       BunsenLabs, Calculate, Carbs, CentOS, Chakra, ChaletOS,
+#       Chapeau, Chrom*, Cleanjaro, ClearOS, Clear_Linux, Clover,
+#       Condres, Container_Linux, CRUX, Cucumber, Debian, Deepin,
+#       DesaOS, Devuan, DracOS, DarkOs, DragonFly, Drauger, Elementary,
+#       EndeavourOS, Endless, EuroLinux, Exherbo, Fedora, Feren, FreeBSD,
+#       FreeMiNT, Frugalware, Funtoo, GalliumOS, Garuda, Gentoo, Pentoo,
+#       gNewSense, GNOME, GNU, GoboLinux, Grombyang, Guix, Haiku, Huayra,
+#       Hyperbola, janus, Kali, KaOS, KDE_neon, Kibojoe, Kogaion,
+#       Korora, KSLinux, Kubuntu, LEDE, LFS, Linux_Lite,
+#       LMDE, Lubuntu, Lunar, macos, Mageia, MagpieOS, Mandriva,
+#       Manjaro, Maui, Mer, Minix, LinuxMint, MX_Linux, Namib,
+#       Neptune, NetBSD, Netrunner, Nitrux, NixOS, Nurunner,
+#       NuTyX, OBRevenge, OpenBSD, openEuler, OpenIndiana, openmamba,
+#       OpenMandriva, OpenStage, OpenWrt, osmc, Oracle, OS Elbrus, PacBSD,
+#       Parabola, Pardus, Parrot, Parsix, TrueOS, PCLinuxOS, Peppermint,
+#       popos, Porteus, PostMarketOS, Proxmox, Puppy, PureOS, Qubes, Radix,
+#       Raspbian, Reborn_OS, Redstar, Redcore, Redhat, Refracted_Devuan,
+#       Regata, Rosa, sabotage, Sabayon, Sailfish, SalentOS, Scientific,
+#       Septor, SereneLinux, SharkLinux, Siduction, Slackware, SliTaz,
+#       SmartOS, Solus, Source_Mage, Sparky, Star, SteamOS, SunOS,
+#       openSUSE_Leap, openSUSE_Tumbleweed, openSUSE, SwagArch, Tails,
+#       Trisquel, Ubuntu-Budgie, Ubuntu-GNOME, Ubuntu-MATE, Ubuntu-Studio,
+#       Ubuntu, Venom, Void, Obarun, windows10, Windows7, Xubuntu, Zorin,
+#       and IRIX have ascii logos
+# NOTE: Arch, Ubuntu, Redhat, and Dragonfly have 'old' logo variants.
+#       Use '{distro name}_old' to use the old logos.
+# NOTE: Ubuntu has flavor variants.
+#       Change this to Lubuntu, Kubuntu, Xubuntu, Ubuntu-GNOME,
+#       Ubuntu-Studio, Ubuntu-Mate  or Ubuntu-Budgie to use the flavors.
+# NOTE: Arcolinux, Dragonfly, Fedora, Alpine, Arch, Ubuntu,
+#       CRUX, Debian, Gentoo, FreeBSD, Mac, NixOS, OpenBSD, android,
+#       Antrix, CentOS, Cleanjaro, ElementaryOS, GUIX, Hyperbola,
+#       Manjaro, MXLinux, NetBSD, Parabola, POP_OS, PureOS,
+#       Slackware, SunOS, LinuxLite, OpenSUSE, Raspbian,
+#       postmarketOS, and Void have a smaller logo variant.
+****/
+
 const (
 	// Horizontal spaces
 	HSPACES int = 0
@@ -59,88 +102,6 @@ const (
 	BLUE
 	MAGENTA
 )
-
-// setColors: it uses almost same schema colors as
-// from original neofetch, but as array
-func setColors(colors ...int) []string {
-	result := make([]string, len(colors)+1)
-	result[0] = ""
-	for id, colorID := range colors {
-		result[id+1] = colorConverter(colorID)
-	}
-	return result
-}
-
-// colorConverter: colors schema isn't matching with golorama
-// so a conversion is needed
-func colorConverter(color int) string {
-	switch color {
-	case LIGHTRED:
-		return golorama.GetCSI(golorama.LIGHTRED)
-	case LIGHTGREEN:
-		return golorama.GetCSI(golorama.LIGHTGREEN)
-	case LIGHTYELLOW:
-		return golorama.GetCSI(golorama.LIGHTYELLOW)
-	case LIGHTBLUE:
-		return golorama.GetCSI(golorama.LIGHTBLUE)
-	case LIGHTMAGENTA:
-		return golorama.GetCSI(golorama.LIGHTMAGENTA)
-	case RED:
-		return golorama.GetCSI(golorama.RED)
-	case GREEN:
-		return golorama.GetCSI(golorama.GREEN)
-	case YELLOW:
-		return golorama.GetCSI(golorama.YELLOW)
-	case BLUE:
-		return golorama.GetCSI(golorama.BLUE)
-	case MAGENTA:
-		return golorama.GetCSI(golorama.MAGENTA)
-	default:
-		return golorama.Reset()
-	}
-}
-
-func reset() string {
-	return golorama.Reset()
-}
-
-func macOSLogo() string {
-	// set_colors 2 3 1 1 5 4
-	c := setColors(2, 3, 1, 1, 5, 4)
-	return `
- ` + c[1] + `                    'c.
-                  ,xNMM.
-                .OMMMMo
-                OMMM0,
-      .;loddo:' loolloddol;.
-    cKMMMMMMMMMMNWMMMMMMMMMM0:
- ` + c[2] + ` .KMMMMMMMMMMMMMMMMMMMMMMMWd.
-  XMMMMMMMMMMMMMMMMMMMMMMMX.
- ` + c[3] + `;MMMMMMMMMMMMMMMMMMMMMMMM:
- :MMMMMMMMMMMMMMMMMMMMMMMM:
- ` + c[4] + `.MMMMMMMMMMMMMMMMMMMMMMMMX.
-  kMMMMMMMMMMMMMMMMMMMMMMMMWd.
-  ` + c[5] + `.XMMMMMMMMMMMMMMMMMMMMMMMMMMk
-   .XMMMMMMMMMMMMMMMMMMMMMMMMK.
-     ` + c[6] + `kMMMMMMMMMMMMMMMMMMMMMMd
-      ;KMMMMMMMWXXWMMMMMMMk.
-        .cooc,.    .,coo:.
-` + reset()
-}
-
-func printLogo(logo string) {
-	fmt.Println(logo)
-}
-
-func getLogo(system string) string {
-	switch system {
-	case "macOS":
-		return macOSLogo()
-	default:
-		return fmt.Sprintf("System not found: %s", system)
-	}
-
-}
 
 func getLogoDimensions(logo string) (width, height int) {
 	width = 0
@@ -167,7 +128,8 @@ func lineStripColorCode(line string) string {
 func main() {
 	dataFetch := negofetch{}
 	dataFetch.detectOS()
-	logo := getLogo(dataFetch.OS)
+	// logo := getLogo(dataFetch.OS)
+	logo := macOSLogo()
 	logoX, logoY := getLogoDimensions(logo)
 	printLogo(logo)
 
