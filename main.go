@@ -356,7 +356,7 @@ func grep(pattern, text string) bool {
 func getUptime() string {
 	uname := getUname()
 
-	sysname := byte256ToString(uname.Sysname)
+	sysname := byteToString(string(uname.Sysname[:]))
 
 	switch sysname {
 	case "Linux":
@@ -387,15 +387,15 @@ func shellExec(command string) string {
 	return strings.TrimSuffix(string(result), "\n")
 }
 
-func byte256ToString(b [256]byte) string {
-
+// byte256ToString: remove the blanks from string conversion
+func byteToString(s string) string {
 	str := ""
-	for i := 0; i < len(b); i++ {
+	for i := 0; i < len(s); i++ {
 		// remove padding 0s
-		if b[i] == 0 {
+		if s[i] == 0 {
 			continue
 		}
-		str += string(b[i])
+		str += string(s[i])
 	}
 	return str
 }
