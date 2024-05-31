@@ -250,7 +250,7 @@ don't believe 100% will be here.
 | Logo:  OpenSUSE | TBD |
 | Logo:  Raspbian | TBD |
 | Logo:  postmarketOS | TBD |
-| Option: ascii_art | TBD |
+| Option: ascii_art | done |
 | Username @ hostname | done |
 | OS | in progress |
 | Host | done |
