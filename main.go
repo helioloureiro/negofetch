@@ -409,7 +409,17 @@ func byteToString(s string) string {
 	return str
 }
 
-func getPackages() string {
+func (n *negofetch) getPackages() string {
+	switch n.OS {
+	case "macOS":
+		return getBrewPackages()
+	default:
+		return "Not implemented yet for " + n.OS
+
+	}
+}
+
+func getBrewPackages() string {
 	packages := shellExec("brew list -1")
 	counter := 0
 	for _, pkg := range strings.Split(packages, "\n") {
@@ -421,6 +431,7 @@ func getPackages() string {
 		}
 	}
 	return fmt.Sprintf("%d (brew)", counter)
+
 }
 
 func getTerminalSize() (int, int) {
