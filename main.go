@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -103,6 +104,24 @@ const (
 	MAGENTA
 )
 
+type negofetch struct {
+	OS           string
+	Host         string
+	Kernel       string
+	Uptime       string
+	Packages     string
+	Shell        string
+	Resolution   string
+	DE           string
+	WM           string
+	WMTheme      string
+	Terminal     string
+	TerminalFont string
+	CPU          string
+	GPU          string
+	Memory       string
+}
+
 func getLogoDimensions(logo string) (width, height int) {
 	width = 0
 	height = 0
@@ -126,10 +145,18 @@ func lineStripColorCode(line string) string {
 }
 
 func main() {
+	distro := flag.String("ascii_distro", "", "ascii_distro")
+	flag.Parse()
 	dataFetch := negofetch{}
 	dataFetch.detectOS()
-	// logo := getLogo(dataFetch.OS)
-	logo := macOSLogo()
+	var logo string
+	if *distro != "" {
+		fmt.Println("Using alternative logo: ", *distro)
+		logo = getLogo(*distro)
+	} else {
+		fmt.Println("Using default logo: ", dataFetch.OS)
+		logo = getLogo(dataFetch.OS)
+	}
 	logoX, logoY := getLogoDimensions(logo)
 	printLogo(logo)
 
@@ -215,25 +242,7 @@ func main() {
 }
 
 func getBoldTitle(title string) string {
-	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, golorama.Reset())
-}
-
-type negofetch struct {
-	OS           string
-	Host         string
-	Kernel       string
-	Uptime       string
-	Packages     string
-	Shell        string
-	Resolution   string
-	DE           string
-	WM           string
-	WMTheme      string
-	Terminal     string
-	TerminalFont string
-	CPU          string
-	GPU          string
-	Memory       string
+	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, reset())
 }
 
 func (n *negofetch) detectOS() {

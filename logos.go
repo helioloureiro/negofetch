@@ -85,6 +85,110 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
 	  ` + c[2] + `//      ` + c[1] + `\\  \\
 			   \\
 		`
+	case "alpine":
+		c := setColors(4, 5, 7, 6)
+		return `
+` + c[1] + `       .hddddddddddddddddddddddh.
+		:dddddddddddddddddddddddddd:
+	   /dddddddddddddddddddddddddddd/
+	  +dddddddddddddddddddddddddddddd+
+	'sdddddddddddddddddddddddddddddddds'
+   'ydddddddddddd++hdddddddddddddddddddy'
+  .hddddddddddd+'  '+ddddh:-sdddddddddddh.
+  hdddddddddd+'      '+y:    .sddddddddddh
+  ddddddddh+'   '//'   '.'     -sddddddddd
+  ddddddh+'   '/hddh/'   ':s-    -sddddddd
+  ddddh+'   '/+/dddddh/'   '+s-    -sddddd
+  ddd+'   '/o' :dddddddh/'   'oy-    .yddd
+  hdddyo+ohddyosdddddddddho+oydddy++ohdddh
+  .hddddddddddddddddddddddddddddddddddddh.
+   'yddddddddddddddddddddddddddddddddddy'
+	'sdddddddddddddddddddddddddddddddds'
+	  +dddddddddddddddddddddddddddddd+
+	   /dddddddddddddddddddddddddddd/
+		:dddddddddddddddddddddddddd:
+		 .hddddddddddddddddddddddh.
+`
+	case "Alter":
+		c := setColors(6, 6)
+		return `
+` + c[1] + `                      %,
+                    ^WWWw
+                   'wwwwww
+                  !wwwwwwww
+                 #'wwwwwwwww
+                @wwwwwwwwwwww
+               wwwwwwwwwwwwwww
+              wwwwwwwwwwwwwwwww
+             wwwwwwwwwwwwwwwwwww
+            wwwwwwwwwwwwwwwwwwww,
+           w~1i.wwwwwwwwwwwwwwwww,
+         3~:~1lli.wwwwwwwwwwwwwwww.
+        :~~:~?ttttzwwwwwwwwwwwwwwww
+       #<~:~~~~?llllltO-.wwwwwwwwwww
+      #~:~~:~:~~?ltlltlttO-.wwwwwwwww
+     @~:~~:~:~:~~(zttlltltlOda.wwwwwww
+    @~:~~: ~:~~:~:(zltlltlO    a,wwwwww
+   8~~:~~:~~~~:~~~~_1ltltu          ,www
+  5~~:~~:~~:~~:~~:~~~_1ltq             N,,
+ g~:~~:~~~:~~:~~:~:~~~~1q                N,		
+`
+	case "Amazon":
+		c := setColors(3, 7)
+		return `
+` + c[1] + `             '-/oydNNdyo:.'
+		'.:+shmMMMMMMMMMMMMMMmhs+:.'
+	  -+hNNMMMMMMMMMMMMMMMMMMMMMMNNho-
+  .''      -/+shmNNMMMMMMNNmhs+/-      ''.
+  dNmhs+:.       '.:/oo/:.'       .:+shmNd
+  dMMMMMMMNdhs+:..        ..:+shdNMMMMMMMd
+  dMMMMMMMMMMMMMMNds    odNMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  dMMMMMMMMMMMMMMMMh    yMMMMMMMMMMMMMMMMd
+  .:+ydNMMMMMMMMMMMh    yMMMMMMMMMMMNdy+:.
+	   '.:+shNMMMMMh    yMMMMMNhs+:''
+			  '-+shy    shs+:'
+`
+	case "Anarchy":
+		c := setColors(7, 4)
+		return `
+                         ` + c[2] + `..` + c[1] + `
+                        ` + c[2] + `..` + c[1] + `
+                      ` + c[2] + `:..` + c[1] + `
+                    ` + c[2] + `:+++.` + c[1] + `
+              .:::++` + c[2] + `++++` + c[1] + `+::.
+          .:+######` + c[2] + `++++` + c[1] + `######+:.
+       .+#########` + c[2] + `+++++` + c[1] + `##########:.
+     .+##########` + c[2] + `+++++++` + c[1] + `##` + c[2] + `+` + c[1] + `#########+.
+    +###########` + c[2] + `+++++++++` + c[1] + `############:
+   +##########` + c[2] + `++++++` + c[1] + `#` + c[2] + `++++` + c[1] + `#` + c[2] + `+` + c[1] + `###########+
+  +###########` + c[2] + `+++++` + c[1] + `###` + c[2] + `++++` + c[1] + `#` + c[2] + `+` + c[1] + `###########+
+ :##########` + c[2] + `+` + c[1] + `#` + c[2] + `++++` + c[1] + `####` + c[2] + `++++` + c[1] + `#` + c[2] + `+` + c[1] + `############:
+ ###########` + c[2] + `+++++` + c[1] + `#####` + c[2] + `+++++` + c[1] + `#` + c[2] + `+` + c[1] + `###` + c[2] + `++` + c[1] + `######+
+.##########` + c[2] + `++++++` + c[1] + `#####` + c[2] + `++++++++++++` + c[1] + `#######.
+.##########` + c[2] + `+++++++++++++++++++` + c[1] + `###########.
+ #####` + c[2] + `++++++++++++++` + c[1] + `###` + c[2] + `++++++++` + c[1] + `#########+
+ :###` + c[2] + `++++++++++` + c[1] + `#########` + c[2] + `+++++++` + c[1] + `#########:
+  +######` + c[2] + `+++++` + c[1] + `##########` + c[2] + `++++++++` + c[1] + `#######+
+   +####` + c[2] + `+++++` + c[1] + `###########` + c[2] + `+++++++++` + c[1] + `#####+
+    :##` + c[2] + `++++++` + c[1] + `############` + c[2] + `++++++++++` + c[1] + `##:
+     .` + c[2] + `++++++` + c[1] + `#############` + c[2] + `++++++++++` + c[1] + `+.
+      :` + c[2] + `++++` + c[1] + `###############` + c[2] + `+++++++` + c[1] + `::
+     .` + c[2] + `++. .:+` + c[1] + `##############` + c[2] + `+++++++` + c[1] + `..
+     ` + c[2] + `.:.` + c[1] + `      ..::++++++::..:` + c[2] + `++++` + c[1] + `+.
+     ` + c[2] + `.` + c[1] + `                       ` + c[2] + `.:+++` + c[1] + `.
+                                ` + c[2] + `.:` + c[1] + `:
+                                   ` + c[2] + `..` + c[1] + `
+                                    ` + c[2] + `..` + c[1] + `
+
+`
 	case "macOS":
 		return macOSLogo()
 	default:

@@ -25,7 +25,10 @@ don't believe 100% will be here.
 | --- | --- |
 | Logo: macOS | done |
 | Logo: AIX | done |
+| Logo:  Hash | done |
 | Logo:  Alpine | TBD |
+| Logo:  alpine_small | done |
+| Logo:  Amazon | done |
 | Logo:  Anarchy | TBD |
 | Logo:  Android | TBD |
 | Logo:  Antergos | TBD |
