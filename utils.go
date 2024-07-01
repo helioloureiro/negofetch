@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -66,4 +67,9 @@ func lineStripColorCode(line string) string {
 
 func getBoldTitle(title string) string {
 	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, reset())
+}
+
+func fileExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
 }

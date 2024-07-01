@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
@@ -232,11 +231,6 @@ func (n *negofetch) detectOS() {
 		n.OS = "Windows (not found /etc)"
 	}
 
-}
-
-func fileExist(filename string) bool {
-	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
 }
 
 func positionStepUp(x, y *int) {
