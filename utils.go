@@ -61,11 +61,7 @@ func getLogoDimensions(logo string) (width, height int) {
 }
 
 func lineStripColorCode(line string) string {
-	re, err := regexp.Compile(`\\033.*m[^m]`)
-	if err != nil {
-		log.Fatal("Failed to compile regex")
-	}
-	return re.ReplaceAllString(line, "")
+	return sed(`\\033\[\d+m`, ``, line)
 }
 
 func getBoldTitle(title string) string {

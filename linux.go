@@ -27,7 +27,8 @@ func getOSFromOSRelease() string {
 	}
 	for _, line := range strings.Split(string(data), "\n") {
 		if strings.HasPrefix(line, "NAME=") {
-			return strings.TrimPrefix(line, "NAME=")
+			os := strings.TrimPrefix(line, "NAME=")
+			return sed(`"`, ``, os)
 		}
 	}
 	return "Unknown"

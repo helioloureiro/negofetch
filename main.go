@@ -3,15 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
-	"os/user"
 
 	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
 	//"golang.org/x/crypto/ssh/terminal"
-
-	"golang.org/x/sys/unix"
 )
 
 /*
@@ -250,73 +246,6 @@ func positionStepUp(x, y *int) {
 
 func setCursorPosition(x, y int) {
 	fmt.Printf("\033[%d;%dH", y, x)
-}
-
-func getUsername() string {
-	u, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return u.Username
-}
-
-func getHostname() string {
-	h, err := os.Hostname()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return h
-}
-
-func getUname() unix.Utsname {
-	var uname unix.Utsname
-	err := unix.Uname(&uname)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return uname
-}
-
-func (n *negofetch) getShell() string {
-	shell := os.Getenv("SHELL")
-
-	if grep("/bin/bash", shell) {
-		shell = "bash"
-	} else if grep("/bin/zsh", shell) {
-		shell = "zsh"
-	} else if grep("/bin/fish", shell) {
-		shell = "fish"
-	} else if grep("/bin/tcsh", shell) {
-		shell = "tcsh"
-	} else if grep("/bin/csh", shell) {
-		shell = "csh"
-	} else if grep("/bin/csh", shell) {
-		shell = "csh"
-	} else if grep("/bin/ksh", shell) {
-		shell = "ksh"
-	}
-
-	n.Shell = shell
-	return shell
-}
-
-func getUptime() string {
-	uname := getUname()
-
-	sysname := byteToString(string(uname.Sysname[:]))
-
-	switch sysname {
-	case "Linux":
-		// si := sysinfo.Get()
-		// return si.Uptime.String()
-		return "hardcoded uptime"
-
-	case "Darwin":
-		return getUptimeFromShell()
-	default:
-		return "uknown system: " + getUptimeFromShell()
-	}
-
 }
 
 func (n *negofetch) getPackages() string {
