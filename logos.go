@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/helioloureiro/golorama"
 )
@@ -31,8 +32,10 @@ func macOSLogo() string {
 }
 
 func getLogo(system string) string {
+	// system name will be matched in lower case
+	system = strings.ToLower(system)
 	switch system {
-	case "AIX":
+	case "aix":
 		c := setColors(2, 7)
 		return c[1] + `
 	       ':+ssssossossss+-'
@@ -55,7 +58,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
       :ys:/yNNNNNNNNNNNNNNNmy/:sy:
         .+ys///osyhhhhys+///sy+.
             -/osssossossso/-	`
-	case "Hash":
+	case "hash":
 		// it is set_color 123 on original...
 		c := setColors(1, 2, 3)
 		return c[1] + `
@@ -107,7 +110,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
 		:dddddddddddddddddddddddddd:
 		 .hddddddddddddddddddddddh.		
 `
-	case "Alter":
+	case "alter":
 		c := setColors(6, 6)
 		return `
 ` + c[1] + `                      %,
@@ -131,7 +134,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
   5~~:~~:~~:~~:~~:~~~_1ltq             N,,
  g~:~~:~~~:~~:~~:~:~~~~1q                N,		
 `
-	case "Amazon":
+	case "amazon":
 		c := setColors(3, 7)
 		return c[1] + `
 		'-/oydNNdyo:.'
@@ -154,7 +157,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
 	   '.:+shNMMMMMh    yMMMMMNhs+:''
 			  '-+shy    shs+:'
 `
-	case "Anarchy":
+	case "anarchy":
 		c := setColors(7, 4)
 		return `
                          ` + c[2] + `..` + c[1] + `
@@ -187,7 +190,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
                                     ` + c[2] + `..` + c[1] + `
 
 `
-	case "Android":
+	case "android":
 		c := setColors(2, 7)
 		return c[1] + `         -o          o-
 		+hydNNNNdyh+
@@ -208,7 +211,7 @@ h//NNNNh  ossss' +h  md- .hm/ 'sNNNNN:+y
 		MMMMo  oMMMM
 		oNMm-  -mMNs
 		`
-	case "Antergos":
+	case "antergos":
 		c := setColors(4, 6)
 		return c[2] + `              '.-/::/-''
 		.-/osssssssso/.
@@ -231,136 +234,139 @@ dmmmdddddddhhhyso` + c[1] + `++++++` + c[2] + `shhhhhddddddmmmmh
   '.:+ooyyddddddddddddyyso+:.'
   `
 
-	case "AntiX":
+	case "antix":
 		c := setColors(1, 7, 6)
 		return c[1] + `
-		\
-, - ~ ^ ~ - \        /
-, '              \ ' ,  /
-,                   \   '/
-,                     \  / ,
-,___,                   \/   ,
-/   |   _  _  _|_ o     /\   ,
+                    \
+         , - ~ ^ ~ - \        /
+     , '              \ ' ,  /
+   ,                   \   '/
+  ,                     \  / ,
+ ,___,                   \/   ,
+ /   |   _  _  _|_ o     /\   ,
 |,   |  / |/ |  |  |    /  \  ,
-\,_/\_/  |  |_/|_/|_/_/    \,
-,                  /     ,\
-,               /  , '   \
-' - , _ _ _ ,  '
-`
-	case "ArcoLinux":
-		c := setColors(7, 4)
-		return c[2] + `                    /-
-			ooo:
-		   yoooo/
-		  yooooooo
-		 yooooooooo
-		yooooooooooo
-	  .yooooooooooooo
-	 .oooooooooooooooo
-	.oooooooarcoooooooo
-   .ooooooooo-oooooooooo
-  .ooooooooo-  oooooooooo
- :ooooooooo.    :ooooooooo
-:ooooooooo.      :ooooooooo
-:oooarcooo         .oooarcooo
-:ooooooooy           .ooooooooo
-:ooooooooo   ` + c[1] + `/ooooooooooooooooooo` + c[2] + `
-:ooooooooo      ` + c[1] + `.-ooooooooooooooooo.` + c[2] + `
-ooooooooo-             ` + c[1] + `-ooooooooooooo.` + c[2] + `
-ooooooooo-                 ` + c[1] + `.-oooooooooo.` + c[2] + `
-ooooooooo.                     ` + c[1] + `-ooooooooo` + c[2] + `
-`
-	case "ArchBox":
-		c := setColors(2, 7, 1)
-		return c[1] + `              ...:+oh/:::..
-		..-/oshhhhhh'   '::::-.
-	.:/ohhhhhhhhhhhh'        '-::::.
-.+shhhhhhhhhhhhhhhhh'             '.::-.
-/'-:+shhhhhhhhhhhhhh'            .-/+shh
-/      .:/ohhhhhhhhh'       .:/ohhhhhhhh
-/           '-:+shhh'  ..:+shhhhhhhhhhhh
-/                 .:ohhhhhhhhhhhhhhhhhhh
-/                  'hhhhhhhhhhhhhhhhhhhh
-/                  'hhhhhhhhhhhhhhhhhhhh
-/                  'hhhhhhhhhhhhhhhhhhhh
-/                  'hhhhhhhhhhhhhhhhhhhh
-/      .+o+        'hhhhhhhhhhhhhhhhhhhh
-/     -hhhhh       'hhhhhhhhhhhhhhhhhhhh
-/     ohhhhho      'hhhhhhhhhhhhhhhhhhhh
-/:::+'hhhhoos'     'hhhhhhhhhhhhhhhhhs+'
-   '--/:'   /:     'hhhhhhhhhhhho/-
-			-/:.   'hhhhhhs+:-'
-			   ::::/ho/-'
-			   `
-	case "ARCHlabs":
-		c := setColors(6, 6, 7, 1)
-		return c[1] + `                     'c'
-		'kKk,
-	   .dKKKx.
-	  .oKXKXKd.
-	 .l0XXXXKKo.
-	 c0KXXXXKX0l.
-	:0XKKOxxOKX0l.
-   :OXKOc. .c0XX0l.
-  :OK0o. ` + c[4] + `...` + c[1] + `'dKKX0l.
- :OX0c  ` + c[4] + `;xOx'` + c[1] + `'dKXX0l.
-:0KKo.` + c[4] + `.o0XXKd'.` + c[1] + `lKXX0l.
-c0XKd.` + c[4] + `.oKXXXXKd..` + c[1] + `oKKX0l.
-.c0XKk;` + c[4] + `.l0K0OO0XKd..` + c[1] + `oKXXKo.
-.l0XXXk:` + c[4] + `,dKx,.'l0XKo.` + c[1] + `.kXXXKo.
-.o0XXXX0d,` + c[4] + `:x;   .oKKx'` + c[1] + `.dXKXXKd.
-.oKXXXXKK0c.` + c[4] + `;.    :00c'` + c[1] + `cOXXXXXKd.
-.dKXXXXXXXXk,` + c[4] + `.     cKx'` + c[1] + `'xKXXXXXXKx'
-'xKXXXXK0kdl:.     ` + c[4] + `.ok; ` + c[1] + `.cdk0KKXXXKx'
-'xKK0koc,..         ` + c[4] + `'c, ` + c[1] + `    ..,cok0KKk,
-,xko:'.             ` + c[4] + `.. ` + c[1] + `           .':okx;
-.,'.                                   .',.
-`
-	case "ArchStrike":
-		c := setColors(8, 6)
-		return c[1] + `
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> *<C2><A0> <C2><A0>
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> **.
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0>****
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> ******
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> *******
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> ** *******
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0>**** *******
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> ` + c[1] + `****` + c[2] + `_____` + c[1] + `***` + c[2] + `/` + c[1] + `*
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0>***` + c[2] + `/` + c[1] + `*******` + c[2] + `//` + c[1] + `***
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0> **` + c[2] + `/` + c[1] + `********` + c[2] + `///` + c[1] + `*` + c[2] + `/` + c[1] + `**
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> <C2><A0>**` + c[2] + `/` + c[1] + `*******` + c[2] + `////` + c[1] + `***` + c[2] + `/` + c[1] + `**
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0> **` + c[2] + `/` + c[1] + `****` + c[2] + `//////.,` + c[1] + `****` + c[2] + `/` + c[1] + `**
-		<C2><A0> <C2><A0> <C2><A0> <C2><A0>***` + c[2] + `/` + c[1] + `*****` + c[2] + `/////////` + c[1] + `**` + c[2] + `/` + c[1] + `***
-		<C2><A0> <C2><A0> <C2><A0> ****` + c[2] + `/` + c[1] + `**** <C2><A0> <C2><A0>` + c[2] + `/////` + c[1] + `***` + c[2] + `/` + c[1] + `****
-		<C2><A0> <C2><A0> <C2><A0>******` + c[2] + `/` + c[1] + `***  ` + c[2] + `//// <C2><A0> ` + c[1] + `**` + c[2] + `/` + c[1] + `******
-		<C2><A0> <C2><A0> ********` + c[2] + `/` + c[1] + `* ` + c[2] + `/// <C2><A0> <C2><A0><C2><A0> ` + c[1] + `*` + c[2] + `/` + c[1] + `********
-		<C2><A0> ,****** <C2><A0> <C2><A0> ` + c[2] + `// ______ / <C2><A0> <C2><A0>` + c[1] + `******,
-		`
-	case "Arch":
-		c := setColors(6, 6, 7, 1)
-		return c[1] + `                   -'
-		.o+'
-		'ooo/
-	   '+oooo:
-	  '+oooooo:
-	  -+oooooo+:
-	'/:-:++oooo+:
-   '/++++/+++++++:
-  '/++++++++++++++:
- '/+++o` + c[2] + `oooooooo` + c[1] + `oooo/'
-` + c[2] + `         ` + c[1] + `./` + c[2] + `ooosssso++osssssso` + c[1] + `+'
-` + c[2] + `        .oossssso-''''/ossssss+'
--osssssso.      :ssssssso.
-:osssssss/        osssso+++.
-/ossssssss/        +ssssooo/-
-'/ossssso+/:-        -:/+osssso+-
-'+sso+:-'                 '.-/+oso:
-'++:.                           '-/+/
-.'                                 '/
+ \,_/\_/  |  |_/|_/|_/_/    \,
+   ,                  /     ,\
+     ,               /  , '   \
+      ' - , _ _ _ ,  '
 
 `
-	case "macOS":
+	case "arcolinux":
+		c := setColors(7, 4)
+		return c[2] + `                    /-
+                   ooo:
+                  yoooo/
+                 yooooooo
+                yooooooooo
+               yooooooooooo
+             .yooooooooooooo
+            .oooooooooooooooo
+           .oooooooarcoooooooo
+          .ooooooooo-oooooooooo
+         .ooooooooo-  oooooooooo
+        :ooooooooo.    :ooooooooo
+       :ooooooooo.      :ooooooooo
+      :oooarcooo         .oooarcooo
+     :ooooooooy           .ooooooooo
+    :ooooooooo   ` + c[1] + `/ooooooooooooooooooo` + c[2] + `
+   :ooooooooo      ` + c[1] + `.-ooooooooooooooooo.` + c[2] + `
+  ooooooooo-             ` + c[1] + `-ooooooooooooo.` + c[2] + `
+ ooooooooo-                 ` + c[1] + `.-oooooooooo.` + c[2] + `
+ooooooooo.                     ` + c[1] + `-ooooooooo` + c[2] + `
+`
+	case "archbox":
+		c := setColors(2, 7, 1)
+		return c[1] + `              ...:+oh/:::..
+         ..-/oshhhhhh'   '::::-.
+     .:/ohhhhhhhhhhhh'        '-::::.
+ .+shhhhhhhhhhhhhhhhh'             '.::-.
+ /'-:+shhhhhhhhhhhhhh'            .-/+shh
+ /      .:/ohhhhhhhhh'       .:/ohhhhhhhh
+ /           '-:+shhh'  ..:+shhhhhhhhhhhh
+ /                 .:ohhhhhhhhhhhhhhhhhhh
+ /                  'hhhhhhhhhhhhhhhhhhhh
+ /                  'hhhhhhhhhhhhhhhhhhhh
+ /                  'hhhhhhhhhhhhhhhhhhhh
+ /                  'hhhhhhhhhhhhhhhhhhhh
+ /      .+o+        'hhhhhhhhhhhhhhhhhhhh
+ /     -hhhhh       'hhhhhhhhhhhhhhhhhhhh
+ /     ohhhhho      'hhhhhhhhhhhhhhhhhhhh
+ /:::+'hhhhoos'     'hhhhhhhhhhhhhhhhhs+'
+    '--/:'   /:     'hhhhhhhhhhhho/-
+             -/:.   'hhhhhhs+:-'
+                ::::/ho/-'
+			   `
+	case "archlabs":
+		c := setColors(6, 6, 7, 1)
+		return c[1] + `                     'c'
+                    'kKk,
+                   .dKKKx.
+                  .oKXKXKd.
+                 .l0XXXXKKo.
+                 c0KXXXXKX0l.
+                :0XKKOxxOKX0l.
+               :OXKOc. .c0XX0l.
+              :OK0o. ` + c[4] + `...` + c[1] + `'dKKX0l.
+             :OX0c  ` + c[4] + `;xOx'` + c[1] + `'dKXX0l.
+            :0KKo.` + c[4] + `.o0XXKd'.` + c[1] + `lKXX0l.
+           c0XKd.` + c[4] + `.oKXXXXKd..` + c[1] + `oKKX0l.
+         .c0XKk;` + c[4] + `.l0K0OO0XKd..` + c[1] + `oKXXKo.
+        .l0XXXk:` + c[4] + `,dKx,.'l0XKo.` + c[1] + `.kXXXKo.
+       .o0XXXX0d,` + c[4] + `:x;   .oKKx'` + c[1] + `.dXKXXKd.
+      .oKXXXXKK0c.` + c[4] + `;.    :00c'` + c[1] + `cOXXXXXKd.
+     .dKXXXXXXXXk,` + c[4] + `.     cKx'` + c[1] + `'xKXXXXXXKx'
+    'xKXXXXK0kdl:.     ` + c[4] + `.ok; ` + c[1] + `.cdk0KKXXXKx'
+   'xKK0koc,..         ` + c[4] + `'c, ` + c[1] + `    ..,cok0KKk,
+  ,xko:'.             ` + c[4] + `.. ` + c[1] + `           .':okx;
+ .,'.                                   .',.
+
+`
+	case "archstrike":
+		c := setColors(8, 6)
+		return c[1] +
+			`                   *   
+                  **.
+                 ****
+                ******
+                *******
+              ** *******
+             **** *******
+            ` + c[1] + `****` + c[2] + `_____` + c[1] + `***` + c[2] + `/` + c[1] + `*
+           ***` + c[2] + `/` + c[1] + `*******` + c[2] + `//` + c[1] + `***
+          **` + c[2] + `/` + c[1] + `********` + c[2] + `///` + c[1] + `*` + c[2] + `/` + c[1] + `**
+         **` + c[2] + `/` + c[1] + `*******` + c[2] + `////` + c[1] + `***` + c[2] + `/` + c[1] + `**
+        **` + c[2] + `/` + c[1] + `****` + c[2] + `//////.,` + c[1] + `****` + c[2] + `/` + c[1] + `**
+       ***` + c[2] + `/` + c[1] + `*****` + c[2] + `/////////` + c[1] + `**` + c[2] + `/` + c[1] + `***
+      ****` + c[2] + `/` + c[1] + `****    ` + c[2] + `/////` + c[1] + `***` + c[2] + `/` + c[1] + `****
+     ******` + c[2] + `/` + c[1] + `***  ` + c[2] + `////   ` + c[1] + `**` + c[2] + `/` + c[1] + `******
+    ********` + c[2] + `/` + c[1] + `* ` + c[2] + `///      ` + c[1] + `*` + c[2] + `/` + c[1] + `********
+  ,******     ` + c[2] + `// ______ /    ` + c[1] + `******,
+
+		`
+	case "arch":
+		c := setColors(6, 6, 7, 1)
+		return c[1] +
+			`                   -'
+                  .o+'
+                 'ooo/
+                '+oooo:
+               '+oooooo:
+               -+oooooo+:
+             '/:-:++oooo+:
+            '/++++/+++++++:
+           '/++++++++++++++:
+          '/+++o` + c[2] + `oooooooo` + c[1] + `oooo/'
+` + c[2] + `         ` + c[1] + `./` + c[2] + `ooosssso++osssssso` + c[1] + `+'
+` + c[2] + `        .oossssso-''''/ossssss+'
+       -osssssso.      :ssssssso.
+      :osssssss/        osssso+++.
+     /ossssssss/        +ssssooo/-
+   '/ossssso+/:-        -:/+osssso+-
+  '+sso+:-'                 '.-/+oso:
+ '++:.                           '-/+/
+ .'                                 '/
+`
+	case "macos":
 		return macOSLogo()
 	default:
 		return fmt.Sprintf("System not found: %s", system)
