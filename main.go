@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"os/user"
 	"regexp"
 	"strings"
@@ -279,8 +278,9 @@ func getOSFromLSB() string {
 		log.Fatal(err)
 	}
 	for _, line := range strings.Split(string(data), "\n") {
-		if strings.HasPrefix(line, "DISTRIB_ID=") {
-			return strings.TrimPrefix(line, "DISTRIB_ID=")
+		if grep("DISTRIB_ID=", line) {
+			system := strings.TrimPrefix(line, "DISTRIB_ID=")
+			return sed(`"`, ``, system)
 		}
 	}
 	return "Unknown"
@@ -355,14 +355,6 @@ func (n *negofetch) getShell() string {
 	return shell
 }
 
-func grep(pattern, text string) bool {
-	re, err := regexp.Compile(pattern)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return re.MatchString(text)
-}
-
 func getUptime() string {
 	uname := getUname()
 
@@ -385,29 +377,6 @@ func getUptime() string {
 func getUptimeFromShell() string {
 	uptime := shellExec("uptime")
 	return strings.Split(uptime, ",")[0]
-}
-
-func shellExec(command string) string {
-	commandPieces := strings.Split(command, " ")
-	result, err := exec.Command(commandPieces[0], commandPieces[1:]...).Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return strings.TrimSuffix(string(result), "\n")
-}
-
-// byte256ToString: remove the blanks from string conversion
-func byteToString(s string) string {
-	str := ""
-	for i := 0; i < len(s); i++ {
-		// remove padding 0s
-		if s[i] == 0 {
-			continue
-		}
-		str += string(s[i])
-	}
-	return str
 }
 
 func (n *negofetch) getPackages() string {
