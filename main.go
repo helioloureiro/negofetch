@@ -6,14 +6,11 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"regexp"
-	"strings"
 
 	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
 	//"golang.org/x/crypto/ssh/terminal"
 
-	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/sys/unix"
 )
 
@@ -121,28 +118,6 @@ type negofetch struct {
 	Memory       string
 }
 
-func getLogoDimensions(logo string) (width, height int) {
-	width = 0
-	height = 0
-	for _, line := range strings.Split(logo, "\n") {
-		line = lineStripColorCode(line)
-		innerWidth := len(line)
-		if innerWidth > width {
-			width = innerWidth
-		}
-		height++
-	}
-	return width, height
-}
-
-func lineStripColorCode(line string) string {
-	re, err := regexp.Compile(`\\033.*m[^m]`)
-	if err != nil {
-		log.Fatal("Failed to compile regex")
-	}
-	return re.ReplaceAllString(line, "")
-}
-
 func main() {
 	distro := flag.String("ascii_distro", "", "ascii_distro")
 	flag.Parse()
@@ -240,10 +215,6 @@ func main() {
 	// extra
 }
 
-func getBoldTitle(title string) string {
-	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, reset())
-}
-
 func (n *negofetch) detectOS() {
 	if fileExist("/etc") {
 		system := shellExec("uname -s")
@@ -272,32 +243,6 @@ func fileExist(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func getOSFromLSB() string {
-	data, err := os.ReadFile("/etc/lsb-release")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, line := range strings.Split(string(data), "\n") {
-		if grep("DISTRIB_ID=", line) {
-			system := strings.TrimPrefix(line, "DISTRIB_ID=")
-			return sed(`"`, ``, system)
-		}
-	}
-	return "Unknown"
-}
-
-func getOSFromOSRelease() string {
-	data, err := os.ReadFile("/etc/os-release")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, line := range strings.Split(string(data), "\n") {
-		if strings.HasPrefix(line, "NAME=") {
-			return strings.TrimPrefix(line, "NAME=")
-		}
-	}
-	return "Unknown"
-}
 func positionStepUp(x, y *int) {
 	setCursorPosition(*x, *y)
 	*y++
@@ -374,11 +319,6 @@ func getUptime() string {
 
 }
 
-func getUptimeFromShell() string {
-	uptime := shellExec("uptime")
-	return strings.Split(uptime, ",")[0]
-}
-
 func (n *negofetch) getPackages() string {
 	switch n.OS {
 	case "macOS":
@@ -388,29 +328,4 @@ func (n *negofetch) getPackages() string {
 		return "Not implemented yet for " + n.OS
 
 	}
-}
-
-func getBrewPackages() string {
-	packages := shellExec("brew list -1")
-	counter := 0
-	for _, pkg := range strings.Split(packages, "\n") {
-		if grep("==>", pkg) {
-			continue
-		}
-		if pkg != "" {
-			counter++
-		}
-	}
-	return fmt.Sprintf("%d (brew)", counter)
-
-}
-
-func getTerminalSize() (int, int) {
-	currentTerminalFD := int(os.Stdin.Fd())
-	termWidth, termHeight, err := terminal.GetSize(currentTerminalFD)
-	if err != nil {
-		log.Fatal("Error:", err)
-	}
-
-	return termWidth, termHeight
 }

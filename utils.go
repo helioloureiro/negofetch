@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/helioloureiro/golorama"
 )
 
 func grep(pattern, text string) bool {
@@ -41,4 +44,30 @@ func byteToString(s string) string {
 		str += string(s[i])
 	}
 	return str
+}
+
+func getLogoDimensions(logo string) (width, height int) {
+	width = 0
+	height = 0
+	for _, line := range strings.Split(logo, "\n") {
+		line = lineStripColorCode(line)
+		innerWidth := len(line)
+		if innerWidth > width {
+			width = innerWidth
+		}
+		height++
+	}
+	return width, height
+}
+
+func lineStripColorCode(line string) string {
+	re, err := regexp.Compile(`\\033.*m[^m]`)
+	if err != nil {
+		log.Fatal("Failed to compile regex")
+	}
+	return re.ReplaceAllString(line, "")
+}
+
+func getBoldTitle(title string) string {
+	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, reset())
 }
