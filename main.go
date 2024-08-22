@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
+	"strings"
 
 	// "github.com/capnm/sysinfo"
 	"github.com/helioloureiro/golorama"
@@ -95,8 +97,9 @@ const (
 	MAGENTA
 )
 
-type negofetch struct {
+type Negofetch struct {
 	OS           string
+	OSType       string
 	Host         string
 	Kernel       string
 	Uptime       string
@@ -116,17 +119,40 @@ type negofetch struct {
 func main() {
 	distro := flag.String("ascii_distro", "", "ascii_distro")
 	flag.Parse()
-	dataFetch := negofetch{}
-	dataFetch.detectOS()
+	negofetch := Negofetch{}
+	negofetch.detectOS()
 	var logo string
 	if *distro != "" {
 		fmt.Println("Using alternative logo: ", *distro)
 		logo = getLogo(*distro)
 	} else {
-		fmt.Println("Using default logo: ", dataFetch.OS)
-		logo = getLogo(dataFetch.OS)
+		fmt.Println("Using default logo: ", negofetch.OS)
+		logo = getLogo(negofetch.OS)
 	}
 	logoX, logoY := getLogoDimensions(logo)
+	uname := getUname()
+	negofetch.OS = fmt.Sprintf("%s", uname.Sysname)
+	negofetch.OSType = byteToString(fmt.Sprintf("%s", uname.Sysname))
+	negofetch.Host = fmt.Sprintf("%s", uname.Nodename)
+	negofetch.Kernel = fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
+	negofetch.Uptime = getUptime()
+	negofetch.Packages = negofetch.getPackages()
+	negofetch.Shell = negofetch.getShell()
+	negofetch.Resolution = "1920x1080 (hardcoded)"
+	negofetch.DE = "aqua (hardcoded)"
+	negofetch.WM = "quartz (hardcoded)"
+	negofetch.WMTheme = "graphite (hardcoded)"
+	negofetch.Terminal = "iterm2 (hardcoded)"
+	negofetch.TerminalFont = "Monaco (hardcoded)"
+	negofetch.CPU = "Apple M1 (hardcoded)"
+	negofetch.GPU = "Apple M1 (hardcoded)"
+	negofetch.getMemory()
+
+	endHere := true
+	if endHere {
+		fmt.Printf("%v", negofetch)
+		return
+	}
 	printLogo(logo)
 
 	// time.Sleep(3 * time.Second)
@@ -158,51 +184,35 @@ func main() {
 		fmt.Printf("-")
 	}
 	positionStepUp(&posX, &posY)
-	uname := getUname()
-	os := uname.Sysname
-	host := uname.Nodename
-	kernel := fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
-	uptime := getUptime()
-	packages := dataFetch.getPackages()
-	shell := dataFetch.getShell()
-	resolution := "1920x1080 (hardcoded)"
-	de := "aqua (hardcoded)"
-	wm := "quartz (hardcoded)"
-	wmTheme := "graphite (hardcoded)"
-	terminal := "iterm2 (hardcoded)"
-	terminalFont := "Monaco (hardcoded)"
-	cpu := "Apple M1 (hardcoded)"
-	gpu := "Apple M1 (hardcoded)"
-	memory := "16 GB (hardcoded)"
-	fmt.Printf("%s: %s", getBoldTitle("OS"), os)
+	fmt.Printf("%s: %s", getBoldTitle("OS"), negofetch.OS)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Host"), host)
+	fmt.Printf("%s: %s", getBoldTitle("Host"), negofetch.Host)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Kernel"), kernel)
+	fmt.Printf("%s: %s", getBoldTitle("Kernel"), negofetch.Kernel)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Uptime"), uptime)
+	fmt.Printf("%s: %s", getBoldTitle("Uptime"), negofetch.Uptime)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Packages"), packages)
+	fmt.Printf("%s: %s", getBoldTitle("Packages"), negofetch.Packages)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Shell"), shell)
+	fmt.Printf("%s: %s", getBoldTitle("Shell"), negofetch.Shell)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Resolution"), resolution)
+	fmt.Printf("%s: %s", getBoldTitle("Resolution"), negofetch.Resolution)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("DE"), de)
+	fmt.Printf("%s: %s", getBoldTitle("DE"), negofetch.DE)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("WM"), wm)
+	fmt.Printf("%s: %s", getBoldTitle("WM"), negofetch.WM)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("WM Theme"), wmTheme)
+	fmt.Printf("%s: %s", getBoldTitle("WM Theme"), negofetch.WMTheme)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Terminal"), terminal)
+	fmt.Printf("%s: %s", getBoldTitle("Terminal"), negofetch.Terminal)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Terminal Font"), terminalFont)
+	fmt.Printf("%s: %s", getBoldTitle("Terminal Font"), negofetch.TerminalFont)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("CPU"), cpu)
+	fmt.Printf("%s: %s", getBoldTitle("CPU"), negofetch.CPU)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("GPU"), gpu)
+	fmt.Printf("%s: %s", getBoldTitle("GPU"), negofetch.GPU)
 	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Memory"), memory)
+	fmt.Printf("%s: %s", getBoldTitle("Memory"), negofetch.Memory)
 
 	// back to the end
 	// fmt.Printf("\033[%d;%dH", termHeight, termWidth)
@@ -210,7 +220,7 @@ func main() {
 	// extra
 }
 
-func (n *negofetch) detectOS() {
+func (n *Negofetch) detectOS() {
 	if fileExist("/etc") {
 		system := shellExec("uname -s")
 		switch system {
@@ -242,7 +252,7 @@ func setCursorPosition(x, y int) {
 	fmt.Printf("\033[%d;%dH", y, x)
 }
 
-func (n *negofetch) getPackages() string {
+func (n *Negofetch) getPackages() string {
 	switch n.OS {
 	case "macOS":
 		n.Packages = getBrewPackages()
@@ -250,5 +260,45 @@ func (n *negofetch) getPackages() string {
 	default:
 		return "Not implemented yet for " + n.OS
 
+	}
+}
+
+func (n *Negofetch) getMemory() {
+	switch n.OSType {
+	case "Linux":
+		n.LinuxMemory()
+	case "macOS":
+		n.Memory = "not implemented, nor supported"
+	default:
+		n.Memory = "not implemented for " + n.OSType
+	}
+}
+
+func (n *Negofetch) LinuxMemory() {
+	fmt.Println("Getting memory on Linux")
+	for _, line := range openFileAsArrayOfLines("/proc/meminfo") {
+		if grep("MemTotal:", line) {
+			// MemTotal:       24485228 kB
+			line = sed("  *", " ", line)
+			memTotalStr := strings.Split(line, " ")[1]
+			memInt, err := strconv.Atoi(memTotalStr)
+			if err != nil {
+				panic(err)
+			}
+			var memUnit string = "KB"
+			var sizeOfMem float64
+			for _, unit := range []string{"MB", "GB", "TB", "PB"} {
+				result := float64(memInt) / 1000.00
+				fmt.Println(result)
+				if result < 1000 {
+					memUnit = unit
+					sizeOfMem = result
+					break
+				}
+				memInt = memInt / 1000
+			}
+			n.Memory = fmt.Sprintf("%0.2f %s", sizeOfMem, memUnit)
+			break
+		}
 	}
 }

@@ -73,3 +73,12 @@ func fileExist(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
+
+func openFileAsArrayOfLines(filename string) []string {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		panic("Failed to open: " + filename)
+	}
+	lines := strings.Split(string(data), "\n")
+	return lines
+}

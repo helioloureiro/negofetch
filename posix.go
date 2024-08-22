@@ -54,7 +54,7 @@ func getUname() unix.Utsname {
 	return uname
 }
 
-func (n *negofetch) getShell() string {
+func (n *Negofetch) getShell() string {
 	shell := os.Getenv("SHELL")
 
 	if grep("/bin/bash", shell) {
