@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/helioloureiro/negofetch/linux"
 	"github.com/helioloureiro/negofetch/macos"
@@ -99,8 +100,9 @@ const (
 )
 
 type Negofetch struct {
+	username     string
 	os           string
-	host         string
+	hostname     string
 	kernel       string
 	uptime       string
 	packages     string
@@ -140,12 +142,19 @@ func (s *Screen) moveCursorDown() {
 	s.x++
 }
 
+var Version = "development"
+
 func main() {
 	distro := flag.String("ascii_distro", "", "ascii_distro")
+	version := flag.Bool("version", false, "version")
 	flag.Parse()
+
+	if *version {
+		fmt.Println("Version:", Version)
+		os.Exit(0)
+	}
+
 	negofetch := newNegoFetch()
-	negofetch.screen = Screen{}
-	negofetch.logo = Logo{}
 	negofetch.screen.initialCursorPosition()
 	negofetch.detectOS()
 	if len(*distro) > 0 {
@@ -238,7 +247,16 @@ func main() {
 }
 
 func newNegoFetch() Negofetch {
-	return Negofetch{}
+	system := NewOperatingSystem()
+	return Negofetch{
+		username: system.GetUsername(),
+		hostname: system.GetHostname(),
+		screen:   Screen{},
+		logo:     Logo{},
+		uptime:   system.GetUptime(),
+		shell:    system.GetShell(),
+		kernel:   system.GetKernel(),
+	}
 }
 
 func (n *Negofetch) detectOS() {
@@ -280,19 +298,79 @@ func (n *Negofetch) getPackages() string {
 	}
 }
 
+type OperatingSystem interface {
+	GetUsername() string
+	GetHostname() string
+	GetShell() string
+	GetMemory() string
+	GetOS() string
+	GetUptime() string
+	GetKernel() string
+}
+
+func NewOperatingSystem() OperatingSystem {
+	switch utils.ShellExec("uname -s") {
+	case "Linux":
+		return &linux.Linux{}
+	case "macOS":
+		return &macos.MacOS{}
+
+	default:
+		return &linux.Linux{}
+	}
+}
+
 func (n *Negofetch) printFormattedData() {
+
 	if n.logo.name == "" {
 		n.screen.leftSpace = 1
 		n.logo.width = 0
 		n.logo.height = 0
 	}
 
+	/***********************************************************************
+	helio@goosfraba
+	---------------
+	OS: Arch Linux x86_64
+	Kernel: 6.11.1-arch1-1
+	Uptime: 1 hour, 27 mins
+	Packages: 2479 (pacman), 13 (flatpak)
+	Shell: fish 3.7.1
+	Resolution: 1920x1080, 1920x1080
+	DE: Plasma 6.1.5
+	WM: KWin
+	WM Theme: Ambience-Dark
+	Theme: Breeze Dark [Plasma], Breeze-Dark [GTK2], Breeze [GTK3]
+	Icons: OpenDesktop-DarkIcons [Plasma], OpenDesktop-DarkIcons [GTK2/3]
+	Terminal: yakuake
+	CPU: AMD FX-8300 (8) @ 3.390GHz
+	GPU: NVIDIA GeForce GTX 1050 Ti
+	Memory: 8298MiB / 31998MiB
+	************************************************************************/
 	yPosition := returnStringOf(n.screen.leftSpace, " ")
 
-	userData := fmt.Sprintf("%s@%s", posix.GetUsername(), posix.GetHostname())
+	// title
+	userData := fmt.Sprintf("%s@%s", n.username, n.hostname)
 	userData = utils.GetBoldTitle(userData)
 	fmt.Printf("%s%s\n", yPosition, userData)
 	fmt.Printf("%s%s\n", yPosition, returnStringOf(len(userData), "-"))
+	//---
+	// OS
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("OS"), n.os)
+	// Kernel
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Kernel"), n.kernel)
+	// Uptime
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Uptime"), n.uptime)
+	// Packages
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Packages"), n.packages)
+	// Shell
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Shell"), n.shell)
+	// Resolution
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Resolution"), n.resolution)
+	// Desktop Environment
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("DE"), n.deskEnviron)
+	// Window Manager
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("WM"), n.wm)
 
 }
 

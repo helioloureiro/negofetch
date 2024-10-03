@@ -103,3 +103,8 @@ func GetUptime() string {
 	}
 
 }
+
+// GetKernel: get the kernel version from uname
+func GetKernel() string {
+	return utils.ShellExec("uname -r")
+}

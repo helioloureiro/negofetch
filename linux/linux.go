@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/helioloureiro/negofetch/posix"
 	"github.com/helioloureiro/negofetch/utils"
 )
 
@@ -45,4 +46,34 @@ func getDistroFromOSRelease() string {
 		}
 	}
 	return "Unknown Linux"
+}
+
+type Linux struct{}
+
+func (l *Linux) GetUsername() string {
+	return posix.GetUsername()
+}
+
+func (l *Linux) GetHostname() string {
+	return posix.GetHostname()
+}
+
+func (l *Linux) GetShell() string {
+	return posix.GetShell()
+}
+
+func (l *Linux) GetMemory() string {
+	return "mem"
+}
+
+func (l *Linux) GetOS() string {
+	return "os"
+}
+
+func (l *Linux) GetUptime() string {
+	return posix.GetUptimeFromShell()
+}
+
+func (l *Linux) GetKernel() string {
+	return posix.GetKernel()
 }

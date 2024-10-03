@@ -90,3 +90,15 @@ func OpenFileAsArrayOfLines(filename string) []string {
 	lines := strings.Split(string(data), "\n")
 	return lines
 }
+
+// Which: find if binary path or returns empty
+func Which(command string) string {
+	paths := os.Getenv("PATH")
+	for _, path := range strings.Split(paths, ":") {
+		binary := path + "/" + command
+		if FileExist(binary) {
+			return binary
+		}
+	}
+	return ""
+}

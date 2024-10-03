@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/helioloureiro/negofetch/posix"
 	"github.com/helioloureiro/negofetch/utils"
 )
 
@@ -20,6 +21,36 @@ func GetBrewPackages() string {
 	}
 	return fmt.Sprintf("%d (brew)", counter)
 
+}
+
+type MacOS struct{}
+
+func (m *MacOS) GetUsername() string {
+	return posix.GetUsername()
+}
+
+func (m *MacOS) GetHostname() string {
+	return posix.GetHostname()
+}
+
+func (m *MacOS) GetShell() string {
+	return posix.GetShell()
+}
+
+func (m *MacOS) GetMemory() string {
+	return "memory"
+}
+
+func (m *MacOS) GetOS() string {
+	return "os"
+}
+
+func (m *MacOS) GetUptime() string {
+	return posix.GetUptimeFromShell()
+}
+
+func (m *MacOS) GetKernel() string {
+	return posix.GetKernel()
 }
 
 /**************************************************
