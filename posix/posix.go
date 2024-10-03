@@ -1,4 +1,4 @@
-package main
+package posix
 
 import (
 	"log"
@@ -73,7 +73,7 @@ func (n *Negofetch) getShell() string {
 		shell = "ksh"
 	}
 
-	n.Shell = shell
+	n.shell = shell
 	return shell
 }
 

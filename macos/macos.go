@@ -1,4 +1,4 @@
-package main
+package macos
 
 import (
 	"fmt"
@@ -19,3 +19,9 @@ func getBrewPackages() string {
 	return fmt.Sprintf("%d (brew)", counter)
 
 }
+
+/**************************************************
+ * NOTE: I've not a macOS to keep testing for it  *
+ * anymore, so this part of the code will be      *
+ * abandoned.                                     *
+ **************************************************/
