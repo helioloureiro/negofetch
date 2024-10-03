@@ -30,7 +30,7 @@ func GetUptimeFromShell() string {
 
 // GetArchitecture: it returns the result from `uname -m`
 func GetArchitecture() string {
-	return utils.shellExec("uname -m")
+	return utils.ShellExec("uname -m")
 }
 
 // GetUsername: it returns the username from whom is running the program
@@ -97,9 +97,9 @@ func GetUptime() string {
 		return "hardcoded uptime"
 
 	case "Darwin":
-		return utils.GetUptimeFromShell()
+		return GetUptimeFromShell()
 	default:
-		return "uknown system: " + utils.GetUptimeFromShell()
+		return "uknown system: " + GetUptimeFromShell()
 	}
 
 }

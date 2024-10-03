@@ -133,7 +133,7 @@ type Logo struct {
 }
 
 func (s *Screen) initialCursorPosition() {
-	s.width, s.height = utils.GetTerminalSize()
+	s.width, s.height = posix.GetTerminalSize()
 }
 
 func (s *Screen) moveCursorDown() {
@@ -151,6 +151,8 @@ func main() {
 	if len(*distro) > 0 {
 		fmt.Println("Distro:", *distro)
 	}
+
+	negofetch.printFormattedData()
 
 	// time.Sleep(3 * time.Second)
 	// fmt.Println("\033[25;17H")
@@ -246,11 +248,7 @@ func (n *Negofetch) detectOS() {
 		case "Darwin":
 			n.os = "macOS"
 		case "Linux":
-			if utils.FileExist("/etc/lsb-release") {
-				n.os = linux.GetOSFromLSB()
-			} else if utils.FileExist("/etc/os-release") {
-				n.os = linux.GetOSFromOSRelease()
-			}
+			n.os = linux.GetDistro()
 		default:
 			n.os = "Unknown Unix: " + system
 			fmt.Println("Sizeof: ", len(system))
@@ -292,6 +290,7 @@ func (n *Negofetch) printFormattedData() {
 	yPosition := returnStringOf(n.screen.leftSpace, " ")
 
 	userData := fmt.Sprintf("%s@%s", posix.GetUsername(), posix.GetHostname())
+	userData = utils.GetBoldTitle(userData)
 	fmt.Printf("%s%s\n", yPosition, userData)
 	fmt.Printf("%s%s\n", yPosition, returnStringOf(len(userData), "-"))
 
