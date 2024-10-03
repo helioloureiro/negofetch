@@ -6,30 +6,35 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/helioloureiro/negofetch/utils"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/sys/unix"
 )
 
-func getTerminalSize() (int, int) {
+// GetTerminalSize: it returns the current terminal size
+func GetTerminalSize() (int, int) {
 	currentTerminalFD := int(os.Stdin.Fd())
-	termWidth, termHeight, err := terminal.GetSize(currentTerminalFD)
+	width, height, err := terminal.GetSize(currentTerminalFD)
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
 
-	return termWidth, termHeight
+	return width, height
 }
 
-func getUptimeFromShell() string {
-	uptime := shellExec("uptime")
+// GetUptimeFromShell: it uses command `uptime` and return the result
+func GetUptimeFromShell() string {
+	uptime := utils.ShellExec("uptime -p")
 	return strings.Split(uptime, ",")[0]
 }
 
-func getArchitecture() string {
-	return shellExec("uname -m")
+// GetArchitecture: it returns the result from `uname -m`
+func GetArchitecture() string {
+	return utils.shellExec("uname -m")
 }
 
-func getUsername() string {
+// GetUsername: it returns the username from whom is running the program
+func GetUsername() string {
 	u, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
@@ -37,7 +42,8 @@ func getUsername() string {
 	return u.Username
 }
 
-func getHostname() string {
+// GetHostname: it returns the hostname
+func GetHostname() string {
 	h, err := os.Hostname()
 	if err != nil {
 		log.Fatal(err)
@@ -45,7 +51,8 @@ func getHostname() string {
 	return h
 }
 
-func getUname() unix.Utsname {
+// GetUname: it return the `uname` on Go!
+func GetUname() unix.Utsname {
 	var uname unix.Utsname
 	err := unix.Uname(&uname)
 	if err != nil {
@@ -54,33 +61,34 @@ func getUname() unix.Utsname {
 	return uname
 }
 
-func (n *Negofetch) getShell() string {
+// GetShell: it returns the current shell
+func GetShell() string {
 	shell := os.Getenv("SHELL")
 
-	if grep("/bin/bash", shell) {
+	if utils.Grep("/bin/bash", shell) {
 		shell = "bash"
-	} else if grep("/bin/zsh", shell) {
+	} else if utils.Grep("/bin/zsh", shell) {
 		shell = "zsh"
-	} else if grep("/bin/fish", shell) {
+	} else if utils.Grep("/bin/fish", shell) {
 		shell = "fish"
-	} else if grep("/bin/tcsh", shell) {
+	} else if utils.Grep("/bin/tcsh", shell) {
 		shell = "tcsh"
-	} else if grep("/bin/csh", shell) {
+	} else if utils.Grep("/bin/csh", shell) {
 		shell = "csh"
-	} else if grep("/bin/csh", shell) {
+	} else if utils.Grep("/bin/csh", shell) {
 		shell = "csh"
-	} else if grep("/bin/ksh", shell) {
+	} else if utils.Grep("/bin/ksh", shell) {
 		shell = "ksh"
 	}
 
-	n.shell = shell
 	return shell
 }
 
-func getUptime() string {
-	uname := getUname()
+// GetUptime: it gets uptime from system
+func GetUptime() string {
+	uname := GetUname()
 
-	sysname := byteToString(string(uname.Sysname[:]))
+	sysname := utils.ByteToString(string(uname.Sysname[:]))
 
 	switch sysname {
 	case "Linux":
@@ -89,9 +97,9 @@ func getUptime() string {
 		return "hardcoded uptime"
 
 	case "Darwin":
-		return getUptimeFromShell()
+		return utils.GetUptimeFromShell()
 	default:
-		return "uknown system: " + getUptimeFromShell()
+		return "uknown system: " + utils.GetUptimeFromShell()
 	}
 
 }

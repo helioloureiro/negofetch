@@ -3,13 +3,15 @@ package macos
 import (
 	"fmt"
 	"strings"
+
+	"github.com/helioloureiro/negofetch/utils"
 )
 
-func getBrewPackages() string {
-	packages := shellExec("brew list -1")
+func GetBrewPackages() string {
+	packages := utils.ShellExec("brew list -1")
 	counter := 0
 	for _, pkg := range strings.Split(packages, "\n") {
-		if grep("==>", pkg) {
+		if utils.Grep("==>", pkg) {
 			continue
 		}
 		if pkg != "" {

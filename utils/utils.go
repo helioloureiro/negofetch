@@ -11,7 +11,8 @@ import (
 	"github.com/helioloureiro/golorama"
 )
 
-func grep(pattern, text string) bool {
+// Grep: find whether a pattern exists in a string
+func Grep(pattern, text string) bool {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		log.Fatal(err)
@@ -19,12 +20,14 @@ func grep(pattern, text string) bool {
 	return re.MatchString(text)
 }
 
-func sed(old_pattern, new_pattern, line string) string {
+// Sed: replace a pattern in a string
+func Sed(old_pattern, new_pattern, line string) string {
 	re := regexp.MustCompile(old_pattern)
 	return re.ReplaceAllString(line, new_pattern)
 }
 
-func shellExec(command string) string {
+// ShellExec: execute some shell command and return the result
+func ShellExec(command string) string {
 	commandPieces := strings.Split(command, " ")
 	result, err := exec.Command(commandPieces[0], commandPieces[1:]...).Output()
 	if err != nil {
@@ -34,8 +37,8 @@ func shellExec(command string) string {
 	return strings.TrimSuffix(string(result), "\n")
 }
 
-// byte256ToString: remove the blanks from string conversion
-func byteToString(s string) string {
+// Byte256ToString: remove the blanks from string conversion
+func ByteToString(s string) string {
 	str := ""
 	for i := 0; i < len(s); i++ {
 		// remove padding 0s
@@ -47,11 +50,12 @@ func byteToString(s string) string {
 	return str
 }
 
-func getLogoDimensions(logo string) (width, height int) {
+// GetLogoDimension: return the width and height of a Logo not counting the terminal tags
+func GetLogoDimensions(logo string) (width, height int) {
 	width = 0
 	height = 0
 	for _, line := range strings.Split(logo, "\n") {
-		line = lineStripColorCode(line)
+		line = LineStripColorCode(line)
 		innerWidth := len(line)
 		if innerWidth > width {
 			width = innerWidth
@@ -61,20 +65,24 @@ func getLogoDimensions(logo string) (width, height int) {
 	return width, height
 }
 
-func lineStripColorCode(line string) string {
-	return sed(`\\033\[\d+m`, ``, line)
+// LineStripColorCode: remove the terminal tags from a string - NOT WORKING
+func LineStripColorCode(line string) string {
+	return Sed(`\\033\[\d+m`, ``, line)
 }
 
-func getBoldTitle(title string) string {
-	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, reset())
+// GetBoldTitle: title in bold style
+func GetBoldTitle(title string) string {
+	return fmt.Sprintf("%s%s%s%s", golorama.GetCSI(golorama.BOLD), golorama.GetCSI(golorama.YELLOW), title, golorama.GetCSI(golorama.RESET_ALL))
 }
 
-func fileExist(filename string) bool {
+// FileExist: check whether a file exists
+func FileExist(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
 
-func openFileAsArrayOfLines(filename string) []string {
+// OpenFileAsArrayOfLines: return file content as array of strings
+func OpenFileAsArrayOfLines(filename string) []string {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		panic("Failed to open: " + filename)
