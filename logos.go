@@ -402,6 +402,8 @@ func colorConverter(color int) string {
 		return golorama.GetCSI(golorama.LIGHTBLUE)
 	case LIGHTMAGENTA:
 		return golorama.GetCSI(golorama.LIGHTMAGENTA)
+	case LIGHTCYAN:
+		return golorama.GetCSI(golorama.LIGHTCYAN)
 	case RED:
 		return golorama.GetCSI(golorama.RED)
 	case GREEN:
@@ -412,6 +414,8 @@ func colorConverter(color int) string {
 		return golorama.GetCSI(golorama.BLUE)
 	case MAGENTA:
 		return golorama.GetCSI(golorama.MAGENTA)
+	case CYAN:
+		return golorama.GetCSI(golorama.CYAN)
 	default:
 		return golorama.Reset()
 	}

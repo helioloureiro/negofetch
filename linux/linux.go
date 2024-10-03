@@ -1,4 +1,4 @@
-package main
+package linux
 
 import (
 	"log"
@@ -31,5 +31,5 @@ func getOSFromOSRelease() string {
 			return sed(`"`, ``, os)
 		}
 	}
-	return "Unknown"
+	return "Unknown Linux"
 }

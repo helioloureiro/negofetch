@@ -1,4 +1,4 @@
-package main
+package posix
 
 import (
 	"log"
@@ -54,7 +54,7 @@ func getUname() unix.Utsname {
 	return uname
 }
 
-func (n *negofetch) getShell() string {
+func (n *Negofetch) getShell() string {
 	shell := os.Getenv("SHELL")
 
 	if grep("/bin/bash", shell) {
@@ -73,7 +73,7 @@ func (n *negofetch) getShell() string {
 		shell = "ksh"
 	}
 
-	n.Shell = shell
+	n.shell = shell
 	return shell
 }
 

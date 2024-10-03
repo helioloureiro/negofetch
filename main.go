@@ -3,10 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
-	// "github.com/capnm/sysinfo"
-	"github.com/helioloureiro/golorama"
-	//"golang.org/x/crypto/ssh/terminal"
 )
 
 /*
@@ -84,55 +80,89 @@ const (
 const (
 	RESET = iota
 	LIGHTRED
-	LIGHTGREEN
+	GREEN
 	LIGHTYELLOW
 	LIGHTBLUE
 	LIGHTMAGENTA
+	CYAN
 	RED
-	GREEN
 	YELLOW
 	BLUE
 	MAGENTA
+	LIGHTCYAN
+	LIGHTGREEN
 )
 
-type negofetch struct {
-	OS           string
-	Host         string
-	Kernel       string
-	Uptime       string
-	Packages     string
-	Shell        string
-	Resolution   string
-	DE           string
-	WM           string
-	WMTheme      string
-	Terminal     string
-	TerminalFont string
-	CPU          string
-	GPU          string
-	Memory       string
+type Negofetch struct {
+	os           string
+	host         string
+	kernel       string
+	uptime       string
+	packages     string
+	shell        string
+	resolution   string
+	deskEnviron  string
+	wm           string
+	wmTheme      string
+	terminal     string
+	terminalFont string
+	cpu          string
+	gpu          string
+	memory       string
+	screen       Screen
+	logo         Logo
+}
+
+type Screen struct {
+	leftSpace int // how much to move to the right to fit the logo
+	x         int
+	y         int
+	width     int
+	height    int
+}
+
+type Logo struct {
+	name   string
+	width  int
+	height int
+}
+
+func (s *Screen) initialCursorPosition() {
+	s.width, s.height = getTerminalSize()
+}
+
+func (s *Screen) moveCursorDown() {
+	s.x++
 }
 
 func main() {
 	distro := flag.String("ascii_distro", "", "ascii_distro")
 	flag.Parse()
-	dataFetch := negofetch{}
-	dataFetch.detectOS()
-	var logo string
-	if *distro != "" {
-		fmt.Println("Using alternative logo: ", *distro)
-		logo = getLogo(*distro)
-	} else {
-		fmt.Println("Using default logo: ", dataFetch.OS)
-		logo = getLogo(dataFetch.OS)
+	negofetch := newNegoFetch()
+	negofetch.screen = Screen{}
+	negofetch.logo = Logo{}
+	negofetch.screen.initialCursorPosition()
+	negofetch.detectOS()
+	if len(*distro) > 0 {
+		fmt.Println("Distro:", *distro)
 	}
-	logoX, logoY := getLogoDimensions(logo)
-	printLogo(logo)
 
-	// time.Sleep(3 * time.Second)
-	// fmt.Println("\033[25;17H")
-	//fmt.Println("TESTING")
-	//fmt.Println("\033[26;17H")
+	negofetch.printFormattedData()
+
+	/*
+		switch *distro {
+		case "":
+			fmt.Println("Using alternative logo: ", *distro)
+			logo.name = *distro
+			break
+		default:
+			fmt.Println("Using default logo: ", dataFetch.OS)
+			logo.name = dataFetch.OS
+			break
+		}
+		logoX, logoY := getLogoDimensions(logo.name)
+		printLogo(logo.name)
+	*/
 
 	/*
 		src: https://stackoverflow.com/questions/33025599/move-the-cursor-in-a-c-program
@@ -145,90 +175,96 @@ func main() {
 			    printf ( "\033[9;17H");//move cursor to row 9 col 17
 	*/
 
-	termWidth, termHeight := getTerminalSize()
-	posX := logoX + HSPACES
-	posY := termHeight - logoY
-	setCursorPosition(posX, posY)
-	positionStepUp(&posX, &posY)
-	machineTag := getUsername() + "@" + getHostname()
-	fmt.Printf("%s%s%s", golorama.GetCSI(golorama.LIGHTGREEN), machineTag, golorama.Reset())
-	positionStepUp(&posX, &posY)
+	/*
+		termWidth, termHeight := getTerminalSize()
+		posX := logoX + HSPACES
+		posY := termHeight - logoY
+		setCursorPosition(posX, posY)
+		positionStepUp(&posX, &posY)
+		machineTag := getUsername() + "@" + getHostname()
+		fmt.Printf("%s%s%s", golorama.GetCSI(golorama.LIGHTGREEN), machineTag, golorama.Reset())
+		positionStepUp(&posX, &posY)
 
-	for i := 0; i < len(machineTag); i++ {
-		fmt.Printf("-")
-	}
-	positionStepUp(&posX, &posY)
-	uname := getUname()
-	os := uname.Sysname
-	host := uname.Nodename
-	kernel := fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
-	uptime := getUptime()
-	packages := dataFetch.getPackages()
-	shell := dataFetch.getShell()
-	resolution := "1920x1080 (hardcoded)"
-	de := "aqua (hardcoded)"
-	wm := "quartz (hardcoded)"
-	wmTheme := "graphite (hardcoded)"
-	terminal := "iterm2 (hardcoded)"
-	terminalFont := "Monaco (hardcoded)"
-	cpu := "Apple M1 (hardcoded)"
-	gpu := "Apple M1 (hardcoded)"
-	memory := "16 GB (hardcoded)"
-	fmt.Printf("%s: %s", getBoldTitle("OS"), os)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Host"), host)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Kernel"), kernel)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Uptime"), uptime)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Packages"), packages)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Shell"), shell)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Resolution"), resolution)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("DE"), de)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("WM"), wm)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("WM Theme"), wmTheme)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Terminal"), terminal)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Terminal Font"), terminalFont)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("CPU"), cpu)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("GPU"), gpu)
-	positionStepUp(&posX, &posY)
-	fmt.Printf("%s: %s", getBoldTitle("Memory"), memory)
+		for i := 0; i < len(machineTag); i++ {
+			fmt.Printf("-")
+		}
+		positionStepUp(&posX, &posY)
+		uname := getUname()
+		os := uname.Sysname
+		host := uname.Nodename
+		kernel := fmt.Sprintf("%s %s", uname.Sysname, uname.Release)
+		uptime := getUptime()
+		packages := dataFetch.getPackages()
+		shell := dataFetch.getShell()
+		resolution := "1920x1080 (hardcoded)"
+		de := "aqua (hardcoded)"
+		wm := "quartz (hardcoded)"
+		wmTheme := "graphite (hardcoded)"
+		terminal := "iterm2 (hardcoded)"
+		terminalFont := "Monaco (hardcoded)"
+		cpu := "Apple M1 (hardcoded)"
+		gpu := "Apple M1 (hardcoded)"
+		memory := "16 GB (hardcoded)"
+		fmt.Printf("%s: %s", getBoldTitle("OS"), os)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Host"), host)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Kernel"), kernel)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Uptime"), uptime)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Packages"), packages)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Shell"), shell)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Resolution"), resolution)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("DE"), de)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("WM"), wm)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("WM Theme"), wmTheme)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Terminal"), terminal)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Terminal Font"), terminalFont)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("CPU"), cpu)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("GPU"), gpu)
+		positionStepUp(&posX, &posY)
+		fmt.Printf("%s: %s", getBoldTitle("Memory"), memory)
 
-	// back to the end
-	// fmt.Printf("\033[%d;%dH", termHeight, termWidth)
-	setCursorPosition(termWidth, termHeight)
-	// extra
+		// back to the end
+		// fmt.Printf("\033[%d;%dH", termHeight, termWidth)
+		setCursorPosition(termWidth, termHeight)
+		// extra
+	*/
 }
 
-func (n *negofetch) detectOS() {
+func newNegoFetch() Negofetch {
+	return Negofetch{}
+}
+
+func (n *Negofetch) detectOS() {
 	if fileExist("/etc") {
 		system := shellExec("uname -s")
 		switch system {
 		case "Darwin":
-			n.OS = "macOS"
+			n.os = "macOS"
 		case "Linux":
 			if fileExist("/etc/lsb-release") {
-				n.OS = getOSFromLSB()
+				n.os = getOSFromLSB()
 			} else if fileExist("/etc/os-release") {
-				n.OS = getOSFromOSRelease()
+				n.os = getOSFromOSRelease()
 			}
 		default:
-			n.OS = "Unknown Unix: " + system
+			n.os = "Unknown Unix: " + system
 			fmt.Println("Sizeof: ", len(system))
 		}
 
 	} else {
-		n.OS = "Windows (not found /etc)"
+		n.os = "Windows (not found /etc)"
 	}
 
 }
@@ -242,13 +278,36 @@ func setCursorPosition(x, y int) {
 	fmt.Printf("\033[%d;%dH", y, x)
 }
 
-func (n *negofetch) getPackages() string {
-	switch n.OS {
+func (n *Negofetch) getPackages() string {
+	switch n.os {
 	case "macOS":
-		n.Packages = getBrewPackages()
-		return n.Packages
+		n.packages = getBrewPackages()
+		return n.packages
 	default:
-		return "Not implemented yet for " + n.OS
+		return "Not implemented yet for " + n.os
 
 	}
+}
+
+func (n *Negofetch) printFormattedData() {
+	if n.logo.name == "" {
+		n.screen.leftSpace = 1
+		n.logo.width = 0
+		n.logo.height = 0
+	}
+
+	yPosition := returnStringOf(n.screen.leftSpace, " ")
+
+	userData := fmt.Sprintf("%s@%s", getUsername(), getHostname())
+	fmt.Printf("%s%s\n", yPosition, userData)
+	fmt.Printf("%s%s\n", yPosition, returnStringOf(len(userData), "-"))
+
+}
+
+func returnStringOf(numberOfSpaces int, character string) string {
+	word := character
+	for i := numberOfSpaces; i > 0; i-- {
+		word += character
+	}
+	return word
 }
