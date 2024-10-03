@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"negofetch/macos"
-	"negofetch/posix"
 
 	"github.com/helioloureiro/negofetch/linux"
+	"github.com/helioloureiro/negofetch/macos"
+	"github.com/helioloureiro/negofetch/posix"
 	"github.com/helioloureiro/negofetch/utils"
 )
 

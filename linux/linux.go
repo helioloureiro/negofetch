@@ -8,7 +8,18 @@ import (
 	"github.com/helioloureiro/negofetch/utils"
 )
 
-func GetDistroFromLSB() string {
+func GetDistro() string {
+	if utils.FileExist("/etc/lsb-release") {
+		return getDistroFromLSB()
+	}
+
+	if utils.FileExist("/etc/os-release") {
+		return getDistroFromOSRelease()
+	}
+	return "Uknown distro"
+}
+
+func getDistroFromLSB() string {
 	data, err := os.ReadFile("/etc/lsb-release")
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +33,7 @@ func GetDistroFromLSB() string {
 	return "Unknown"
 }
 
-func GetDistroFromOSRelease() string {
+func getDistroFromOSRelease() string {
 	data, err := os.ReadFile("/etc/os-release")
 	if err != nil {
 		log.Fatal(err)
