@@ -120,7 +120,7 @@ func GetDistroPackages(distro string) []string {
 	case "mint":
 		return GetDebianPackages()
 	case "archlinux":
-		command = "pacman -Ql"
+		command = "pacman -Q"
 		result := utils.ShellExec(command)
 		return strings.Split(result, "\n")
 	case "fedora":
