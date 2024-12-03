@@ -53,6 +53,10 @@ func (m *MacOS) GetKernel() string {
 	return posix.GetKernel()
 }
 
+func (m *MacOS) GetPackages() string {
+	return "packages not implemented"
+}
+
 /**************************************************
  * NOTE: I've not a macOS to keep testing for it  *
  * anymore, so this part of the code will be      *

@@ -256,6 +256,7 @@ func newNegoFetch() Negofetch {
 		uptime:   system.GetUptime(),
 		shell:    system.GetShell(),
 		kernel:   system.GetKernel(),
+		packages: system.GetPackages(),
 	}
 }
 
@@ -306,6 +307,7 @@ type OperatingSystem interface {
 	GetOS() string
 	GetUptime() string
 	GetKernel() string
+	GetPackages() string
 }
 
 func NewOperatingSystem() OperatingSystem {
