@@ -154,6 +154,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	s, r, m := cacheUname()
+	fmt.Println("sizeof s:", len(s), s)
+	fmt.Println("sizeof r:", len(r), r)
+	fmt.Println("sizeof m:", len(m), m)
+
 	negofetch := newNegoFetch()
 	negofetch.screen.initialCursorPosition()
 	negofetch.detectOS()
@@ -260,6 +265,22 @@ func newNegoFetch() Negofetch {
 	}
 }
 
+func cacheUname() (system, release, machine string) {
+	// same as "uname -srm"
+	u := posix.GetUname()
+	return stringfy65(u.Sysname), stringfy65(u.Release), stringfy65(u.Machine)
+}
+
+func stringfy65(text [65]byte) string {
+	result := ""
+	for _, c := range text {
+		if c != 0 {
+			result = fmt.Sprintf("%s%s", result, string(c))
+		}
+	}
+	return result
+}
+
 func (n *Negofetch) detectOS() {
 	if utils.FileExist("/etc") {
 		system := utils.ShellExec("uname -s")
@@ -359,6 +380,8 @@ func (n *Negofetch) printFormattedData() {
 	//---
 	// OS
 	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("OS"), n.os)
+	// Host
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Host"), n.hostname)
 	// Kernel
 	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Kernel"), n.kernel)
 	// Uptime
@@ -373,6 +396,13 @@ func (n *Negofetch) printFormattedData() {
 	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("DE"), n.deskEnviron)
 	// Window Manager
 	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("WM"), n.wm)
+	//
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Theme"), "none")
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Icons"), "none")
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Terminal"), "none")
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("CPU"), "none")
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("GPU"), "none")
+	fmt.Printf("%s%s: %s\n", yPosition, utils.GetBoldTitle("Memory"), "none")
 
 }
 
