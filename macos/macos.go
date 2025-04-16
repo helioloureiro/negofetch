@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fstanis/screenresolution"
 	"github.com/helioloureiro/negofetch/posix"
 	"github.com/helioloureiro/negofetch/utils"
 )
@@ -55,6 +56,11 @@ func (m *MacOS) GetKernel() string {
 
 func (m *MacOS) GetPackages() string {
 	return "packages not implemented"
+}
+
+func (m *MacOS) GetScreenResolution() string {
+	resolution := screenresolution.GetPrimary()
+	return fmt.Sprintf("%dx%d", resolution.Width, resolution.Height)
 }
 
 /**************************************************
