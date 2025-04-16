@@ -154,5 +154,8 @@ func GetDebianPackages() []string {
 
 func GetScreenResolution(l *Linux) string {
 	resolution := screenresolution.GetPrimary()
+	if resolution == nil {
+		return ""
+	}
 	return fmt.Sprintf("%dx%d", resolution.Width, resolution.Height)
 }
