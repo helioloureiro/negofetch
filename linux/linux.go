@@ -152,7 +152,7 @@ func GetDebianPackages() []string {
 	return okLines
 }
 
-func GetScreenResolution(l *Linux) string {
+func (l *Linux) GetScreenResolution() string {
 	resolution := screenresolution.GetPrimary()
 	if resolution == nil {
 		return ""
