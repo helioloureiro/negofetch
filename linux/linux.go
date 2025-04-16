@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fstanis/screenresolution"
 	"github.com/helioloureiro/negofetch/posix"
 	"github.com/helioloureiro/negofetch/utils"
 )
@@ -149,4 +150,9 @@ func GetDebianPackages() []string {
 		}
 	}
 	return okLines
+}
+
+func GetScreenResolution(l *Linux) string {
+	resolution := screenresolution.GetPrimary()
+	return fmt.Sprintf("%dx%d", resolution.Width, resolution.Height)
 }
